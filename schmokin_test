@@ -1,0 +1,37 @@
+#! /bin/sh
+# file: examples/equality_test.sh
+
+python schmokin_test_server.py >/dev/null 2>&1 /dev/null &
+sleep 1
+pid=$!
+
+ENDPOINT=http://localhost:40000
+
+oneTimeTearDown(){
+    kill $pid
+}
+
+testAssertingOnStatusCode() {
+    curl -is $ENDPOINT/simple 2>&1 | \
+        ./schmokin -s 200
+
+    assertEquals 0 $?
+}
+
+testAssertingEQ() {
+    curl -is $ENDPOINT/simple 2>&1 | \
+        ./schmokin --jq-expr '.status' --eq "UP"
+
+    assertEquals 0 $?
+}
+
+testAssertingGT() {
+    curl -is $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --gt 4
+
+    assertEquals 0 $?
+}
+
+# Load shUnit2.
+. ./shunit2
+
