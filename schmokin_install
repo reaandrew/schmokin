@@ -4,7 +4,7 @@ mkdir -p ~/.schmokin
 
 echo 'export PATH=~/.schmokin/:$PATH' >> ~/.profile
 
-curl -Lo 
+curl -Lo ~/.schmokin/schmokin https://github.com/reaandrew/schmokin/releases/download/latest/schmokin
 
 
 
