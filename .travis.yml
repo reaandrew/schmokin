@@ -1,5 +1,17 @@
 language: bash
 sudo: false
-
+branches:
+  only:
+  - master
+  - hotfix
+  - release
+  - develop
+  - feature/.*
 script:
     - make test
+after_success:
+  - mkdir -p dist/
+  - cp ./schmokin_install dist/
+  - cp ./schmokin dist/
+  - sha1sum schmokin > dist/schmokin.sha1
+  - ghr --username reaandrew --token $GITHUB_TOKEN $(cat VERSION) dist/
