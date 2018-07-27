@@ -14,4 +14,5 @@ after_success:
   - cp ./schmokin_install dist/
   - cp ./schmokin dist/
   - sha1sum schmokin > dist/schmokin.sha1
-  - ghr --username reaandrew --token $GITHUB_TOKEN $(cat VERSION) dist/
+  - curl -L https://github.com/tcnksm/ghr/releases/download/v0.10.1/ghr_v0.10.1_linux_amd64.tar.gz | tar xz
+  - ./ghr_v0.10.1_linux_amd64/ghr --username reaandrew --token $GITHUB_TOKEN $(cat VERSION) dist/
