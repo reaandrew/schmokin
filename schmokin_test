@@ -32,6 +32,14 @@ testAssertingGT() {
     assertEquals 0 $?
 }
 
+testAssertingMultipleTimes() {
+    curl -is $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --gt 4 \
+        -s 200
+
+    assertEquals 0 $?
+}
+
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2
 

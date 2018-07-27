@@ -3,7 +3,7 @@
 export RED='\033[0;31m' export NC='\033[0m' # No Color
 export GREEN='\033[0;32m'
 
-CURL_HTTP_SED="s/> ([A-Z]{3,6}) ([a-zA-Z0-9/\.\_\~\:\/\?\#\!\$\&\(\)\*\+\,\\\;]+) HTTP\/1.1/\1,\2/p"
+CURL_HTTP_SED="s/ ([A-Z]{3,6}) ([a-zA-Z0-9/\.\_\~\:\/\?\#\!\$\&\(\)\*\+\,\\\;]+) HTTP\/1.1/\1,\2/p"
 
 width=75
 data=$(cat /dev/stdin)
@@ -17,6 +17,8 @@ fail=0
 printf '%s %s\n' $method $path
 printf '%0.1s' "-"{1..85}
 printf '\n'
+
+echo "method $method"
 
 jqexpr=''
 jqvalue=''
@@ -41,7 +43,6 @@ while [ -n "$1" ]; do
             STATEMENT="expected status code = $2 actual $actual"
             if echo "$data" | grep -q "HTTP/1.[0-9] $2";
             then
-              fail=0
               printf "%-${width}s [${GREEN}%s${NC}]\n" "$STATEMENT" "PASS"
             else 
               printf "%-${width}s [${RED}%s${NC}]\n" "$STATEMENT" "FAIL"
@@ -59,7 +60,6 @@ while [ -n "$1" ]; do
         msg="expected ${STATEMENT:0:60} = $2 actual $RESULT"
         if [ "$RESULT" = "$2" ];
         then
-         fail=0
          printf "%-${width}s [${GREEN}%s${NC}]\n" "$msg" "PASS"
         else
          fail=1
@@ -70,7 +70,6 @@ while [ -n "$1" ]; do
         msg="expected ${STATEMENT:0:60} > $2 actual $RESULT"
         if [ "$RESULT" -gt "$2" ];
         then
-         fail=0
          printf "%-${width}s [${GREEN}%s${NC}]\n" "$msg" "PASS"
         else
          fail=1
@@ -89,10 +88,10 @@ printf '%0.1s' "-"{1..85}
 printf '\n'
 if [ "$fail" = "1" ];
 then
-    printf "%-${width}s [${RED}%s${NC}]\n" "RESULT" "FAILURE"
+    printf "%-${width}s [${RED}%s${NC}]\n\n" "RESULT" "FAILURE"
     exit $fail
 else
-    printf "%-${width}s [${GREEN}%s${NC}]\n" "RESULT" "SUCCESS"
+    printf "%-${width}s [${GREEN}%s${NC}]\n\n" "RESULT" "SUCCESS"
     exit 0
 fi
 
