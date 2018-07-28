@@ -51,6 +51,7 @@ while [ -n "$1" ]; do
         msg=$2
         JSON=$(echo "$DATA" | tail -n -1) 
         RESULT=$(echo $JSON | jq "$2" | sed 's/\"//g')
+        shift
        ;;
     --eq)
         msg="expected ${msg:0:60} = $2 actual $RESULT"
@@ -60,6 +61,7 @@ while [ -n "$1" ]; do
         else
          FAIL "$msg" "FAIL"
         fi
+        shift
        ;;
     --gt)
         msg="expected ${msg:0:60} > $2 actual $RESULT"
@@ -69,6 +71,7 @@ while [ -n "$1" ]; do
         else
          FAIL "$msg" "FAIL"
         fi
+        shift
        ;;
     --ge)
         msg="expected ${msg:0:60} > $2 actual $RESULT"
@@ -78,10 +81,25 @@ while [ -n "$1" ]; do
         else
          FAIL "$msg" "FAIL"
         fi
+        shift
+       ;;
+    --lt)
+        msg="expected ${msg:0:60} > $2 actual $RESULT"
+        if [ "$RESULT" -lt "$2" ];
+        then
+         PASS "$msg" "PASS"
+        else
+         FAIL "$msg" "FAIL"
+        fi
+        shift
        ;;
     -v )
 		echo "version $VERSION"
         exit 0
+        ;;
+    * )
+        FAIL "Unkonwn arg [$1]" "ERROR"
+        exit 1
         ;;
     esac
     shift

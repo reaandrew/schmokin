@@ -59,33 +59,42 @@ testAssertingGT_Fails() {
 }
 
 
-testAssertingGT_Fails() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --gt 6
-
-    assertEquals 1 $?
-}
-
-testAssertingGTE_Equals() {
+testAssertingGE_Equals() {
     curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --ge 5
 
     assertEquals 0 $?
 }
 
-testAssertingGTE_Greater() {
+testAssertingGE_Greater() {
     curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --ge 4
 
     assertEquals 0 $?
 }
 
-testAssertingGTE_Fails() {
+testAssertingGE_Fails() {
     curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --ge 6
 
     assertEquals 1 $?
 }
+
+testAssertingLT() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --lt 6
+
+    assertEquals 0 $?
+}
+
+testAssertingLT_Fails() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --lt 5
+
+    assertEquals 1 $?
+}
+
+
 
 testAssertingMultipleTimes() {
     curl -vs $ENDPOINT/array 2>&1 | \
