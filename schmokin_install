@@ -4,7 +4,9 @@ mkdir -p ~/.schmokin
 
 echo 'export PATH=~/.schmokin/:$PATH' >> ~/.profile
 
-curl -Lo ~/.schmokin/schmokin https://github.com/reaandrew/schmokin/releases/download/latest/schmokin
+URL=$(curl -s https://github.com/reaandrew/schmokin/releases/latest | sed -rn 's/.*"([^"]+)".*/\1/p')
+
+curl -Lo ~/.schmokin/schmokin $URL
 
 
 
