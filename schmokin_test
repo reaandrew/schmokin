@@ -7,6 +7,12 @@ pid=$!
 
 ENDPOINT=http://localhost:40000
 
+# NOTE ABOUT ASSERTIONS
+# ---------------------------------------------------------
+# The following tests assert on the variable $? which
+# is the return code of the previous command
+# ---------------------------------------------------------
+
 oneTimeTearDown(){
     kill $pid
 }
@@ -18,6 +24,13 @@ testAssertingOnStatusCode() {
     assertEquals 0 $?
 }
 
+testAssertingOnStatusCode_Fails() {
+    curl -vs $ENDPOINT/simple 2>&1 | \
+        ./schmokin -s 201
+
+    assertEquals 1 $?
+}
+
 testAssertingEQ() {
     curl -vs $ENDPOINT/simple 2>&1 | \
         ./schmokin --jq-expr '.status' --eq "UP"
@@ -25,11 +38,25 @@ testAssertingEQ() {
     assertEquals 0 $?
 }
 
+testAssertingEQ_Fails() {
+    curl -vs $ENDPOINT/simple 2>&1 | \
+        ./schmokin --jq-expr '.status' --eq "DOWN"
+
+    assertEquals 1 $?
+}
+
 testAssertingGT() {
     curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --gt 4
 
     assertEquals 0 $?
+}
+
+testAssertingGT_Fails() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --gt 6
+
+    assertEquals 1 $?
 }
 
 testAssertingMultipleTimes() {

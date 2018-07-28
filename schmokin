@@ -1,4 +1,14 @@
 #! /bin/bash
+VERSION=VERSION_HERE
+#   while [ -n "$1" ]; do
+#       case "$1" in
+#       -v )
+#           echo "version $VERSION"
+#           exit 0
+#           ;;
+#       esac
+#       shift
+#   done
 
 export RED='\033[0;31m' export NC='\033[0m' # No Color
 export GREEN='\033[0;32m'
@@ -6,12 +16,16 @@ export GREEN='\033[0;32m'
 CURL_HTTP_SED="s/^> ([A-Z]{3,6}) ([a-zA-Z0-9/\.\_\~\:\/\?\#\!\$\&\(\)\*\+\,\\\;]+) HTTP\/1.1/\1,\2/p"
 
 width=75
-data=$(cat /dev/stdin)
+data=""
 
-VERSION=VERSION_HERE
+if [[ -p /dev/stdin ]]
+then
+    data=$(cat /dev/stdin)
+fi
 
 method=$(echo "$data" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
 path=$(echo "$data" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
+
 
 fail=0
 
@@ -22,41 +36,41 @@ printf '\n'
 jqexpr=''
 jqvalue=''
 
-value_function(){
-    echo "EMPTY"
+R=""
+
+pass(){
+    printf "%-${width}s [${GREEN}%s${NC}]\n" "$1" "${2:-PASS}"
 }
 
-json_function(){
-    echo $()
+fail(){
+    printf "%-${width}s [${RED}%s${NC}]\n" "$1" "${2:-FAIL}"
+    fail=1
 }
 
-STATEMENT=""
+msg=""
 RESULT=""
-
-delegate_function=value_function
 
 while [ -n "$1" ]; do
     case "$1" in
     --status-code|-s )
             actual=$(echo "$data" | sed -rn 's/.*HTTP\/1.[0-9].*([0-9]{3}).*/\1/p' | sed 's/\r//g')
-            STATEMENT="expected status code = $2 actual $actual"
+            msg=$(printf "expected status code = %s actual %s" $2 $actual)
             if echo "$data" | grep -q "HTTP/1.[0-9] $2";
             then
-              printf "%-${width}s [${GREEN}%s${NC}]\n" "$STATEMENT" "PASS"
+              pass "${msg}" "PASS"
             else 
-              printf "%-${width}s [${RED}%s${NC}]\n" "$STATEMENT" "FAIL"
-              fail=1
+              fail "$msg" "FAIL"
             fi
             MODE="$1 $2"
             shift
             ;;
     --jq-expr)
-        STATEMENT=$2
+        msg=$2
         JSON=$(echo "$data" | tail -n -1) 
         RESULT=$(echo $JSON | jq "$2" | sed 's/\"//g')
        ;;
     --eq)
-        msg="expected ${STATEMENT:0:60} = $2 actual $RESULT"
+        msg="expected ${msg:0:60} = $2 actual $RESULT"
         if [ "$RESULT" = "$2" ];
         then
          printf "%-${width}s [${GREEN}%s${NC}]\n" "$msg" "PASS"
@@ -66,7 +80,7 @@ while [ -n "$1" ]; do
         fi
        ;;
     --gt)
-        msg="expected ${STATEMENT:0:60} > $2 actual $RESULT"
+        msg="expected ${msg:0:60} > $2 actual $RESULT"
         if [ "$RESULT" -gt "$2" ];
         then
          printf "%-${width}s [${GREEN}%s${NC}]\n" "$msg" "PASS"
@@ -77,6 +91,7 @@ while [ -n "$1" ]; do
        ;;
     -v )
 		echo "version $VERSION"
+        exit 0
         ;;
     esac
     shift
