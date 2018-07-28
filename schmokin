@@ -34,7 +34,6 @@ FAIL(){
 
 HEADING "$HTTP_METHOD $HTTP_PATH"
 
-
 while [ -n "$1" ]; do
     case "$1" in
     --status-code|-s )
@@ -71,6 +70,15 @@ while [ -n "$1" ]; do
          FAIL "$msg" "FAIL"
         fi
        ;;
+    --ge)
+        msg="expected ${msg:0:60} > $2 actual $RESULT"
+        if [ "$RESULT" -ge "$2" ];
+        then
+         PASS "$msg" "PASS"
+        else
+         FAIL "$msg" "FAIL"
+        fi
+       ;;
     -v )
 		echo "version $VERSION"
         exit 0
@@ -83,10 +91,10 @@ printf '%0.1s' "-"{1..85}
 printf '\n'
 if [ "$FAILED" = "1" ];
 then
-    PASS "RESULT" "FAILURE"
+    FAIL "RESULT" "FAILURE"
     exit $FAILED
 else
-    FAIL "RESULT" "SUCCESS"
+    PASS "RESULT" "SUCCESS"
     exit 0
 fi
 

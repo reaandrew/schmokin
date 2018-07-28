@@ -58,6 +58,35 @@ testAssertingGT_Fails() {
     assertEquals 1 $?
 }
 
+
+testAssertingGT_Fails() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --gt 6
+
+    assertEquals 1 $?
+}
+
+testAssertingGTE_Equals() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --ge 5
+
+    assertEquals 0 $?
+}
+
+testAssertingGTE_Greater() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --ge 4
+
+    assertEquals 0 $?
+}
+
+testAssertingGTE_Fails() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --ge 6
+
+    assertEquals 1 $?
+}
+
 testAssertingMultipleTimes() {
     curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --gt 4 \
