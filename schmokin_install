@@ -6,7 +6,7 @@ echo 'export PATH=~/.schmokin/:$PATH' >> ~/.profile
 
 URL=$(curl -s https://github.com/reaandrew/schmokin/releases/latest | sed -rn 's/.*"([^"]+)".*/\1/p')
 
-curl -Lo ~/.schmokin/schmokin $URL
+curl -sLo ~/.schmokin/schmokin $URL
 
 chmod +x ~/.schmokin/schmokin
 
