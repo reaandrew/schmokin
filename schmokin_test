@@ -6,16 +6,15 @@ sleep 1
 pid=$!
 
 ENDPOINT=http://localhost:40000
+oneTimeTearDown(){
+    kill $pid
+}
 
 # NOTE ABOUT ASSERTIONS
 # ---------------------------------------------------------
 # The following tests assert on the variable $? which
 # is the return code of the previous command
 # ---------------------------------------------------------
-
-oneTimeTearDown(){
-    kill $pid
-}
 
 testAssertingOnStatusCode() {
     curl -vs $ENDPOINT/simple 2>&1 | \
