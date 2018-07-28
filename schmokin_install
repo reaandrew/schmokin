@@ -8,5 +8,6 @@ URL=$(curl -s https://github.com/reaandrew/schmokin/releases/latest | sed -rn 's
 
 curl -Lo ~/.schmokin/schmokin $URL
 
+chmod +x ~/.schmokin/schmokin
 
-
+echo "To start using now run: source ~/.profile"

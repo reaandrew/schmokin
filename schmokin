@@ -3,11 +3,12 @@
 export RED='\033[0;31m' export NC='\033[0m' # No Color
 export GREEN='\033[0;32m'
 
-CURL_HTTP_SED="s/ ([A-Z]{3,6}) ([a-zA-Z0-9/\.\_\~\:\/\?\#\!\$\&\(\)\*\+\,\\\;]+) HTTP\/1.1/\1,\2/p"
+CURL_HTTP_SED="s/^> ([A-Z]{3,6}) ([a-zA-Z0-9/\.\_\~\:\/\?\#\!\$\&\(\)\*\+\,\\\;]+) HTTP\/1.1/\1,\2/p"
 
 width=75
 data=$(cat /dev/stdin)
 
+VERSION=VERSION_HERE
 
 method=$(echo "$data" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
 path=$(echo "$data" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
@@ -17,8 +18,6 @@ fail=0
 printf '%s %s\n' $method $path
 printf '%0.1s' "-"{1..85}
 printf '\n'
-
-echo "method $method"
 
 jqexpr=''
 jqvalue=''
@@ -53,7 +52,7 @@ while [ -n "$1" ]; do
             ;;
     --jq-expr)
         STATEMENT=$2
-        JSON=$(echo "$data" | grep "\{\|\[")
+        JSON=$(echo "$data" | tail -n -1) 
         RESULT=$(echo $JSON | jq "$2" | sed 's/\"//g')
        ;;
     --eq)
@@ -76,10 +75,9 @@ while [ -n "$1" ]; do
          printf "%-${width}s [${RED}%s${NC}]\n" "$msg" "FAIL"
         fi
        ;;
-    "--clean" )
-			echo "clean"
-            CLEAN="$1"
-            ;;
+    -v )
+		echo "version $VERSION"
+        ;;
     esac
     shift
 done

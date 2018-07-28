@@ -12,28 +12,28 @@ oneTimeTearDown(){
 }
 
 testAssertingOnStatusCode() {
-    curl -is $ENDPOINT/simple 2>&1 | \
+    curl -vs $ENDPOINT/simple 2>&1 | \
         ./schmokin -s 200
 
     assertEquals 0 $?
 }
 
 testAssertingEQ() {
-    curl -is $ENDPOINT/simple 2>&1 | \
+    curl -vs $ENDPOINT/simple 2>&1 | \
         ./schmokin --jq-expr '.status' --eq "UP"
 
     assertEquals 0 $?
 }
 
 testAssertingGT() {
-    curl -is $ENDPOINT/array 2>&1 | \
+    curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --gt 4
 
     assertEquals 0 $?
 }
 
 testAssertingMultipleTimes() {
-    curl -is $ENDPOINT/array 2>&1 | \
+    curl -vs $ENDPOINT/array 2>&1 | \
         ./schmokin --jq-expr '. | length' --gt 4 \
         -s 200
 

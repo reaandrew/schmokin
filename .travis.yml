@@ -13,6 +13,7 @@ after_success:
   - mkdir -p dist/
   - cp ./schmokin_install dist/
   - cp ./schmokin dist/
+  - sed -i "s/VERSION_HERE/\"$(cat VERSION)\"/g" dist/schmokin
   - sha1sum schmokin > dist/schmokin.sha1
   - curl -L https://github.com/tcnksm/ghr/releases/download/v0.10.1/ghr_v0.10.1_linux_amd64.tar.gz | tar xz
   - ./ghr_v0.10.1_linux_amd64/ghr --delete --username reaandrew --token $GITHUB_TOKEN $(cat VERSION) dist/
