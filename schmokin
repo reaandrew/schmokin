@@ -5,8 +5,7 @@ then
     export DATA=$(cat /dev/stdin)
 fi
 
-VERSION=VERSION_HERE #Reaplced at build time
-RED='\033[0;31m'
+VERSION=VERSION_HERE #Reaplced at build time RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -74,7 +73,7 @@ while [ -n "$1" ]; do
         shift
        ;;
     --ge)
-        msg="expected ${msg:0:60} > $2 actual $RESULT"
+        msg="expected ${msg:0:60} >= $2 actual $RESULT"
         if [ "$RESULT" -ge "$2" ];
         then
          PASS "$msg" "PASS"
@@ -84,8 +83,18 @@ while [ -n "$1" ]; do
         shift
        ;;
     --lt)
-        msg="expected ${msg:0:60} > $2 actual $RESULT"
+        msg="expected ${msg:0:60} < $2 actual $RESULT"
         if [ "$RESULT" -lt "$2" ];
+        then
+         PASS "$msg" "PASS"
+        else
+         FAIL "$msg" "FAIL"
+        fi
+        shift
+       ;;
+    --le)
+        msg="expected ${msg:0:60} <= $2 actual $RESULT"
+        if [ "$RESULT" -le "$2" ];
         then
          PASS "$msg" "PASS"
         else

@@ -3,8 +3,7 @@
 
 python schmokin_test_server.py >/dev/null 2>&1 /dev/null &
 sleep 1
-pid=$!
-
+pid=$!  
 ENDPOINT=http://localhost:40000
 oneTimeTearDown(){
     kill $pid
@@ -94,6 +93,26 @@ testAssertingLT_Fails() {
     assertEquals 1 $?
 }
 
+testAssertingLE_Equals() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --le 5
+
+    assertEquals 0 $?
+}
+
+testAssertingLE_Lesser() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --le 6
+
+    assertEquals 0 $?
+}
+
+testAssertingLE_Fails() {
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --jq-expr '. | length' --le 4
+
+    assertEquals 1 $?
+}
 
 
 testAssertingMultipleTimes() {
