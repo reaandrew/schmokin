@@ -131,6 +131,22 @@ testAssertingOnResponseHeader(){
     assertEquals 0 $?
 }
 
+testAssertingOnRequestHeader(){
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --req-header "Accept" \
+            --eq '*/*'
+
+    assertEquals 0 $?
+}
+
+testAssertingOnContains(){
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --resp-header "Server" \
+            --contains 'Python'
+
+    assertEquals 0 $?
+}
+
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2
 

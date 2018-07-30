@@ -107,9 +107,24 @@ while [ -n "$1" ]; do
         EXPECTED=$2
         RESULT=$(echo "$DATA" \
             | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
-        echo "RESULT=$RESULT"
         shift
         ;;
+    --req-header)
+        EXPECTED=$2
+        RESULT=$(echo "$DATA" \
+            | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
+        shift
+        ;;
+    --contains)
+        msg="expected ${RESULT:0:30} to contain ${2:0:30}"
+        if  echo "$RESULT" | grep -q "$2";
+        then
+         PASS "$msg" "PASS"
+        else
+         FAIL "$msg" "FAIL"
+        fi
+        shift
+       ;;
     -v )
 		echo "version $VERSION"
         exit 0
