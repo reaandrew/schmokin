@@ -6,7 +6,7 @@ sleep 1
 pid=$!  
 ENDPOINT=http://localhost:40000
 oneTimeTearDown(){
-    kill $pid
+    kill $pid 2>/dev/null
 }
 
 # NOTE ABOUT ASSERTIONS
