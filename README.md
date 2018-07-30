@@ -86,7 +86,7 @@ curl -vs $URL 2>&1 | schmokin --jq-expr '. | length' --le 5
 **Expressions can be combined and evaluated in order**
 
 ```
-curl -vs $URL 2>&1 | schmokin --jq-expr '. | length' --gt 4 \ -s 200
+curl -vs $URL 2>&1 | schmokin --jq-expr '. | length' --gt 4 -s 200
 ```
 
 **Assert equals on a Response Header**
