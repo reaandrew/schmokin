@@ -7,12 +7,13 @@ A simple utility which takes the output from curl and allows you to make asserti
 ## Under the hood
 
 - Made with bash.
-- Uses [https://stedolan.github.io/jq/](jq) and the jq expression syntax to make JSON assertions.
+- Uses [https://stedolan.github.io/jq/](jq) and the jq expression syntax to make JSON assertions, **jq** needs to be installed.
 - Pretty printed JSON output is not supported.
 - Uses shunit and python to test (check out `schmokin_test`)
 - Should work with HTTP/1.1 and HTTP1.0 but not HTTP/2 yet.
-- The Python Web Server is currently Flask and is return HTTP/1.0 output
-- Not tested with HTTPS
+- The Python Web Server is currently Flask and is return HTTP/1.0 output.
+- Not tested with HTTPS.
+- Currently requires either an Ubuntu or Debian installation.
 
 ## Testing
 
