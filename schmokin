@@ -5,7 +5,8 @@ then
     export DATA=$(cat /dev/stdin)
 fi
 
-VERSION=VERSION_HERE #Reaplced at build time RED='\033[0;31m'
+VERSION=VERSION_HERE #Reaplced at build time 
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -102,6 +103,13 @@ while [ -n "$1" ]; do
         fi
         shift
        ;;
+    --resp-header)
+        EXPECTED=$2
+        RESULT=$(echo "$DATA" \
+            | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
+        echo "RESULT=$RESULT"
+        shift
+        ;;
     -v )
 		echo "version $VERSION"
         exit 0

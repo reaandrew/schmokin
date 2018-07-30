@@ -123,6 +123,14 @@ testAssertingMultipleTimes() {
     assertEquals 0 $?
 }
 
+testAssertingOnResponseHeader(){
+    curl -vs $ENDPOINT/array 2>&1 | \
+        ./schmokin --resp-header "Content-Type" \
+            --eq 'application/json'
+
+    assertEquals 0 $?
+}
+
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2
 

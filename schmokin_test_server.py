@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import jsonify
+from flask import make_response
 app = Flask(__name__)
 
 @app.route("/simple")
@@ -12,6 +13,8 @@ def simple():
 @app.route("/array")
 def array():
     data = [1,2,3,4,5]
-    return jsonify(data)
+    response = make_response(jsonify(data))
+    response.headers.set('Content-Type', 'application/json')
+    return response
 
 app.run(port=40000)
