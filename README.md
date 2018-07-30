@@ -2,7 +2,7 @@
 
 A simple utility which takes the output from curl and allows you to make assertion on the headers or the body.
 
-![https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO)
+[![asciicast](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO.png)](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO)
 
 ## Under the hood
 
