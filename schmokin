@@ -2,8 +2,10 @@
 
 if [[ -p /dev/stdin ]]
 then
-    export DATA=$(cat /dev/stdin)
+    DATA=$(cat /dev/stdin)
 fi
+
+export DATA
 
 VERSION=VERSION_HERE #Reaplced at build time 
 RED='\033[0;31m'
@@ -18,7 +20,7 @@ HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
 RESULT=""
 
 HEADING(){
-    printf "${BLUE}%s %s${NC}\n" $1
+    printf "${BLUE}%s %s${NC}\n" "$@"
     printf '%0.1s' "-"{1..85}
     printf '\n'
 }
@@ -32,13 +34,13 @@ FAIL(){
     FAILED=1
 }
 
-HEADING "$HTTP_METHOD $HTTP_PATH"
+HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
 while [ -n "$1" ]; do
     case "$1" in
     --status-code|-s )
             actual=$(echo "$DATA" | sed -rn 's/.*HTTP\/1.[0-9].*([0-9]{3}).*/\1/p' | sed 's/\r//g')
-            msg=$(printf "expected status code = %s actual %s" $2 $actual)
+            msg=$(printf "expected status code = %s actual %s" "$2" "$actual")
             if echo "$DATA" | grep -q "HTTP/1.[0-9] $2";
             then
               PASS "${msg}" "PASS"
@@ -50,7 +52,7 @@ while [ -n "$1" ]; do
     --jq-expr)
         msg=$2
         JSON=$(echo "$DATA" | tail -n -1) 
-        RESULT=$(echo $JSON | jq "$2" | sed 's/\"//g')
+        RESULT=$(echo "$JSON" | jq "$2" | sed 's/\"//g')
         shift
        ;;
     --eq)
