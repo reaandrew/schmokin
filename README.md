@@ -1,5 +1,7 @@
 # Schmokin
 
+[![Build Status](https://travis-ci.org/reaandrew/schmokin.svg?branch=master)](https://travis-ci.org/reaandrew/schmokin)
+
 A simple utility which takes the output from curl and allows you to make assertion on the headers or the body.
 
 [![asciicast](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO.png)](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO)
