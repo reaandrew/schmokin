@@ -107,6 +107,11 @@ testAssertingOnContains(){
     assertEquals 0 $?
 }
 
+testAddingExtraCurlArguments(){
+    ./schmokin $ENDPOINT/array --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
+    assertEquals 0 $?
+}
+
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2
 
