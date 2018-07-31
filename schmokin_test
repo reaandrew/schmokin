@@ -16,134 +16,94 @@ oneTimeTearDown(){
 # ---------------------------------------------------------
 
 testAssertingOnStatusCode() {
-    curl -vs $ENDPOINT/simple 2>&1 | \
-        ./schmokin -s 200
-
+    ./schmokin $ENDPOINT/simple -s 200
     assertEquals 0 $?
 }
 
 testAssertingOnStatusCode_Fails() {
-    curl -vs $ENDPOINT/simple 2>&1 | \
-        ./schmokin -s 201
-
+    ./schmokin $ENDPOINT/simple -s 201
     assertEquals 1 $?
 }
 
 testAssertingEQ() {
-    curl -vs $ENDPOINT/simple 2>&1 | \
-        ./schmokin --jq-expr '.status' --eq "UP"
-
+    ./schmokin $ENDPOINT/simple --jq-expr '.status' --eq "UP"
     assertEquals 0 $?
 }
 
 testAssertingEQ_Fails() {
-    curl -vs $ENDPOINT/simple 2>&1 | \
-        ./schmokin --jq-expr '.status' --eq "DOWN"
-
+    ./schmokin $ENDPOINT/simple --jq-expr '.status' --eq "DOWN"
     assertEquals 1 $?
 }
 
 testAssertingGT() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --gt 4
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --gt 4
     assertEquals 0 $?
 }
 
 testAssertingGT_Fails() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --gt 6
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --gt 6
     assertEquals 1 $?
 }
 
 
 testAssertingGE_Equals() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --ge 5
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --ge 5
     assertEquals 0 $?
 }
 
 testAssertingGE_Greater() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --ge 4
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --ge 4
     assertEquals 0 $?
 }
 
 testAssertingGE_Fails() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --ge 6
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --ge 6
     assertEquals 1 $?
 }
 
 testAssertingLT() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --lt 6
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --lt 6
     assertEquals 0 $?
 }
 
 testAssertingLT_Fails() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --lt 5
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --lt 5
     assertEquals 1 $?
 }
 
 testAssertingLE_Equals() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --le 5
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --le 5
     assertEquals 0 $?
 }
 
 testAssertingLE_Lesser() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --le 6
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --le 6
     assertEquals 0 $?
 }
 
 testAssertingLE_Fails() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --le 4
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --le 4
     assertEquals 1 $?
 }
 
 
 testAssertingMultipleTimes() {
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --jq-expr '. | length' --gt 4 \
-        -s 200
-
+    ./schmokin $ENDPOINT/array --jq-expr '. | length' --gt 4 -s 200
     assertEquals 0 $?
 }
 
 testAssertingOnResponseHeader(){
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --resp-header "Content-Type" \
-            --eq 'application/json'
-
+    ./schmokin $ENDPOINT/array --resp-header "Content-Type" --eq 'application/json'
     assertEquals 0 $?
 }
 
 testAssertingOnRequestHeader(){
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --req-header "Accept" \
-            --eq '*/*'
-
+    ./schmokin $ENDPOINT/array --req-header "Accept" --eq '*/*'
     assertEquals 0 $?
 }
 
 testAssertingOnContains(){
-    curl -vs $ENDPOINT/array 2>&1 | \
-        ./schmokin --resp-header "Server" \
-            --contains 'Python'
-
+    ./schmokin $ENDPOINT/array --resp-header "Server" --contains 'Python'
     assertEquals 0 $?
 }
 

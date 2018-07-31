@@ -1,47 +1,11 @@
 #! /bin/bash
 
-if [[ -p /dev/stdin ]]
-then
-    DATA=$(cat /dev/stdin)
-fi
-
-export DATA
-
-VERSION=VERSION_HERE #Reaplced at build time 
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\/1.1/\1,\2/p"
-WIDTH=75
-FAILED=0
-EXTRA_PARAMS=0
-HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
-HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
-RESULT=""
-CURL_ARGS=()
-
-HEADING(){
-    printf "${BLUE}%s %s${NC}\n" "$@"
-    printf '%0.1s' "-"{1..85}
-    printf '\n'
-}
-
-PASS(){
-    printf "%-${WIDTH}s [${GREEN}%s${NC}]\n" "$1" "${2:-PASS}"
-}
-
-FAIL(){
-    printf "%-${WIDTH}s [${RED}%s${NC}]\n" "$1" "${2:-FAIL}"
-    FAILED=1
-}
-
-HEADING "$HTTP_METHOD" "$HTTP_PATH"
-
 URL=$1
 export URL
 shift
 
+CURL_ARGS=()
+EXTRA_PARAMS=0
 # Loop over the variables to get any args after the --
 whitespace="[[:space:]]"
 for arg in "$@";
@@ -68,10 +32,36 @@ CURL_ARGS+=("-v")
 CURL_ARGS+=("-s")
 CURL_ARGS+=("2>&1")
 
+DATA=$(eval curl "${CURL_ARGS[@]}" "$URL")
 
-echo "$CURL_ARGS"
+VERSION=VERSION_HERE #Reaplced at build time 
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\/1.1/\1,\2/p"
+WIDTH=75
+FAILED=0
+HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
+HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
+RESULT=""
 
-exit 1
+HEADING(){
+    printf "${BLUE}%s %s${NC}\n" "$@"
+    printf '%0.1s' "-"{1..85}
+    printf '\n'
+}
+
+PASS(){
+    printf "%-${WIDTH}s [${GREEN}%s${NC}]\n" "$1" "${2:-PASS}"
+}
+
+FAIL(){
+    printf "%-${WIDTH}s [${RED}%s${NC}]\n" "$1" "${2:-FAIL}"
+    FAILED=1
+}
+
+HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
 while [ -n "$1" ]; do
     case "$1" in
@@ -170,14 +160,10 @@ while [ -n "$1" ]; do
         exit 0
         ;;
     * )
-		echo "invalid argument $1"
-        exit 1
         ;;
     esac
     shift
 done
-
-echo "$CURL_ARGS"
 
 printf '%0.1s' "-"{1..85}
 printf '\n'
