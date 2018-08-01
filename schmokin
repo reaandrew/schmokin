@@ -45,6 +45,7 @@ FAILED=0
 HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
 HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
 RESULT=""
+msg=""
 
 HEADING(){
     printf "${BLUE}%s %s${NC}\n" "$@"
@@ -134,12 +135,14 @@ while [ -n "$1" ]; do
         shift
        ;;
     --resp-header)
+        msg="response header $2"
         EXPECTED=$2
         RESULT=$(echo "$DATA" \
             | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
         shift
         ;;
     --req-header)
+        msg="request header $2"
         EXPECTED=$2
         RESULT=$(echo "$DATA" \
             | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
