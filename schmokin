@@ -145,7 +145,7 @@ while [ -n "$1" ]; do
             | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
         shift
         ;;
-    --contains)
+    --co)
         statement="expected ${RESULT:0:30} to contain ${2:0:30}"
         if  echo "$RESULT" | grep -q "$2";
         then

@@ -14,15 +14,15 @@
 				            <h1 class="display-1 text-center text-secondary">schmokin</h1>
                         </div>
                     </div>
-                    <div class="row mb-5">
+                    <div class="row">
                         <div class="col text-center">
                             <h2>A wrapper for curl providing chainable assertions written in bash</h2>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mt-3 mb-3">
                         <div class="col">
                             <div class="alert alert-secondary text-center code" role="alert">
-                                <pre><code>curl -Ls https://github.com/reaandrew/schmokin/releases/download/0.1.0/schmokin_install | bash</code></pre>
+                                <pre class="mb-0"><code>curl -Ls https://github.com/reaandrew/schmokin/releases/download/0.1.0/schmokin_install | bash</code></pre>
                             </div>
                         </div>
                     </div>
@@ -30,46 +30,36 @@
 			</div>
             <div class="row">
                 <div class="col">
-                    <div class="row mt-1">
-                        <div class="col text-center">
-                            <h3 class="text-secondary">Adds to existing curl capabilities</h3>
-                            <p>Any extra curl arguments can be placed after the <code>--</code> separator.</p>
-                            <pre><code>./schmokin $URL --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"</code></pre>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                        <div class="col text-center">
-                            <h3 class="text-secondary">Simple set of assertions</h3>
-                            <dl class="row text-left">
-                              <dt class="col-sm-2"><pre><code>--eq</code></pre></dt>
-                              <dd class="col-sm-4">equals</dd>
-                              <dt class="col-sm-2"><pre><code>--gt</code></pre></dt>
-                              <dd class="col-sm-4">greater than</dd>
-                              <dt class="col-sm-2"><pre><code>--ge</code></pre></dt>
-                              <dd class="col-sm-4">greater than or equals</dd>
-                              <dt class="col-sm-2"><pre><code>--lt</code></pre></dt>
-                              <dd class="col-sm-4">less than</dd>
-                              <dt class="col-sm-2"><pre><code>--le</code></pre></dt>
-                              <dd class="col-sm-4">less than or equals</dd>
-                              <dt class="col-sm-2"><pre><code>--contains</code></pre></dt>
-                              <dd class="col-sm-4">contains</dd>
-                            </dl>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                        <div class="col text-center">
-                            <h3 class="text-secondary">Uses <a href="https://stedolan.github.io/jq/">JQ</a> under the hood for JSON extraction</h3>
-                            <pre><code>./schmokin $URL --jq-expr '.status' --eq "UP"</code></pre>
-                        </div>
-                    </div>
+                    <h3 class="text-secondary">Simple set of assertions</h3>
+                    <dl class="row text-left">
+                        <dt class="col-2"><pre class="m-0"><code>--eq</code></pre></dt>
+                        <dd class="col-4">equals</dd>
+                        <dt class="col-2"><pre class="m-0"><code>--gt</code></pre></dt>
+                        <dd class="col-4">greater than</dd>
+                        <dt class="col-2"><pre class="m-0"><code>--ge</code></pre></dt>
+                        <dd class="col-4">greater than or equals</dd>
+                        <dt class="col-2"><pre class="m-0"><code>--lt</code></pre></dt>
+                        <dd class="col-4">less than</dd>
+                        <dt class="col-2"><pre class="m-0"><code>--le</code></pre></dt>
+                        <dd class="col-4">less than or equals</dd>
+                        <dt class="col-2"><pre class="m-0"><code>--co</code></pre></dt>
+                        <dd class="col-4">contains</dd>
+                    </dl>
                 </div>
+                <div class="col">
+                    <h3 class="text-secondary">Uses <a href="https://stedolan.github.io/jq/">JQ</a> under the hood for JSON extraction</h3>
+                    <pre><code>./schmokin $URL --jq-expr '.status' --eq "UP"</code></pre>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col">
                     <h3 class="text-secondary">Shiny output</h3>
-                    <img class="img-fluid" src="/images/shiny-example.png"></img>
+                    <img class="img-fluid shadow-lg mb-5 bg-white rounded" src="/images/shiny-example.png"></img>
                 </div>
                 <div class="col">
-                    <h3 class="text-secondary"></h3>
-                    <img class="img-fluid" src="/images/shiny-example.png"></img>
+                    <h3 class="text-secondary">Adds to existing curl capabilities</h3>
+                    <p>Any extra curl arguments can be placed after the <code>--</code> separator.</p>
+                    <pre><code>./schmokin $URL --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"</code></pre>
                 </div>
             </div>
 		</div>
