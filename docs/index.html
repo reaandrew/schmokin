@@ -145,13 +145,13 @@
                         <div class="col">
                             <h3 class="text-secondary">Assert on HTTP status</h3>
                             <div class="alert alert-secondary" role="alert">
-                                <pre class="mb-0"><code>./schmokin $URL --status -eq 200</code></pre>
+                                <pre class="mb-0"><code>schmokin $URL --status -eq 200</code></pre>
                             </div>
                         </div>
                         <div class="col">
                             <h3 class="text-secondary">Equals Assertion</h3>
                             <div class="alert alert-secondary" role="alert">
-                                <pre class="mb-0"><code>./schmokin $URL --jq '.status' --eq "UP"</code></pre>
+                                <pre class="mb-0"><code>schmokin $URL --jq '.status' --eq "UP"</code></pre>
                             </div>
                         </div>
                     </div>
@@ -159,13 +159,59 @@
                         <div class="col">
                             <h3 class="text-secondary">Greater Than Assertion</h3>
                             <div class="alert alert-secondary" role="alert">
-                                <pre class="mb-0"><code>./schmokin $URL --jq '. | length' --gt 4</code></pre>
+                                <pre class="mb-0"><code>schmokin $URL --jq '. | length' --gt 4</code></pre>
                             </div>
                         </div>
                         <div class="col">
                             <h3 class="text-secondary">Greater Than or Equals Assertion</h3>
                             <div class="alert alert-secondary" role="alert">
-                                <pre class="mb-0"><code>./schmokin $URL --jq '. | length' --gt 6</code></pre>
+                                <pre class="mb-0"><code>schmokin $URL --jq '. | length' --ge 6</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-secondary">Less Than Assertion</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code>schmokin $URL --jq '. | length' --lt 4</code></pre>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h3 class="text-secondary">Less Than or Equals Assertion</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code>schmokin $URL --jq '. | length' --le 6</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-secondary">Range Assertions</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code>schmokin $ENDPOINT/created --status --gt 200 --lt 202</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-secondary">Request Header Extractor</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code>schmokin $URL --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-secondary">Response Header Extractor</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code>schmokin $URL --resp-header "Content-Type" --eq 'application/json'</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-secondary">JQ Extractor</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code>schmokin $URL --jq '.status' --eq "UP"</code></pre>
                             </div>
                         </div>
                     </div>

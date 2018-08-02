@@ -1,9 +1,9 @@
 #! /bin/sh
 # file: examples/equality_test.sh
 
-python schmokin_test_server.py >/dev/null 2>&1 /dev/null &
-sleep 1
+python schmokin_test_server.py > test-output.log 2>&1  &
 pid=$!  
+sleep 1
 ENDPOINT=http://localhost:40000
 oneTimeTearDown(){
     kill $pid 2>/dev/null
@@ -23,6 +23,11 @@ testAssertingOnStatusCode() {
 testAssertingOnStatusCode_Fails() {
     ./schmokin $ENDPOINT/simple --status --eq 201
     assertEquals 1 $?
+}
+
+testAssertingOnStatusCodeRange() {
+    ./schmokin $ENDPOINT/created --status --gt 200 --lt 202
+    assertEquals 0 $?
 }
 
 testAssertingEQ() {
