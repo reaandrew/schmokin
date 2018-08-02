@@ -66,19 +66,11 @@ HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
 while [ -n "$1" ]; do
     case "$1" in
-    --status-code|-s )
-            ARGS+=("-s,$2")
-            actual=$(echo "$DATA" | sed -rn 's/.*HTTP\/1.[0-9].*([0-9]{3}).*/\1/p' | sed 's/\r//g')
-            msg=$(printf "expected status code = %s actual %s" "$2" "$actual")
-            if echo "$DATA" | grep -q "HTTP/1.[0-9] $2";
-            then
-              PASS "${msg}" "PASS"
-            else 
-              FAIL "$msg" "FAIL"
-            fi
-            shift
-            ;;
-    --jq-expr)
+    --status)
+       msg=$(printf "HTTP Status")
+       RESULT=$(echo "$DATA" | sed -rn 's/.*HTTP\/1.[0-9].*([0-9]{3}).*/\1/p' | sed 's/\r//g')
+       ;;
+    --jq)
         msg=$2
         JSON=$(echo "$DATA" | tail -n -1) 
         RESULT=$(echo "$JSON" | jq "$2" | sed 's/\"//g')

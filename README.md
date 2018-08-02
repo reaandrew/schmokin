@@ -46,43 +46,43 @@ Schmokin outputs a pretty format and returns either an exit code of 0 (PASSED) o
 **Assert on status code**
 
 ```
-schmokin $URL -s 200
+schmokin $URL --status --eq 200
 ```
 
 **Assert equals on JSON output**
 
 ```
-schmokin $URL --jq-expr '.status' --eq "UP"
+schmokin $URL --jq '.status' --eq "UP"
 ```
 
 **Assert greater than on JSON output**
 
 ```
-schmokin $URL --jq-expr '. | length' --gt 4
+schmokin $URL --jq '. | length' --gt 4
 ```
 
 **Assert greater than or equal on JSON output**
 
 ```
-schmokin $URL --jq-expr '. | length' --ge 5
+schmokin $URL --jq '. | length' --ge 5
 ```
 
 **Assert less than on JSON output**
 
 ```
-schmokin $URL --jq-expr '. | length' --lt 6
+schmokin $URL --jq '. | length' --lt 6
 ```
 
 **Assert less than or equal on JSON output**
 
 ```
-schmokin $URL --jq-expr '. | length' --le 5
+schmokin $URL --jq '. | length' --le 5
 ```
 
 **Expressions can be combined and evaluated in order**
 
 ```
-schmokin $URL --jq-expr '. | length' --gt 4 -s 200
+schmokin $URL --jq '. | length' --gt 4 -s 200
 ```
 
 **Assert equals on a Response Header**

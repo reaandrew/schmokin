@@ -16,79 +16,79 @@ oneTimeTearDown(){
 # ---------------------------------------------------------
 
 testAssertingOnStatusCode() {
-    ./schmokin $ENDPOINT/simple -s 200
+    ./schmokin $ENDPOINT/simple --status --eq 200
     assertEquals 0 $?
 }
 
 testAssertingOnStatusCode_Fails() {
-    ./schmokin $ENDPOINT/simple -s 201
+    ./schmokin $ENDPOINT/simple --status --eq 201
     assertEquals 1 $?
 }
 
 testAssertingEQ() {
-    ./schmokin $ENDPOINT/simple --jq-expr '.status' --eq "UP"
+    ./schmokin $ENDPOINT/simple --jq '.status' --eq "UP"
     assertEquals 0 $?
 }
 
 testAssertingEQ_Fails() {
-    ./schmokin $ENDPOINT/simple --jq-expr '.status' --eq "DOWN"
+    ./schmokin $ENDPOINT/simple --jq '.status' --eq "DOWN"
     assertEquals 1 $?
 }
 
 testAssertingGT() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --gt 4
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 4
     assertEquals 0 $?
 }
 
 testAssertingGT_Fails() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --gt 6
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 6
     assertEquals 1 $?
 }
 
 
 testAssertingGE_Equals() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --ge 5
+    ./schmokin $ENDPOINT/array --jq '. | length' --ge 5
     assertEquals 0 $?
 }
 
 testAssertingGE_Greater() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --ge 4
+    ./schmokin $ENDPOINT/array --jq '. | length' --ge 4
     assertEquals 0 $?
 }
 
 testAssertingGE_Fails() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --ge 6
+    ./schmokin $ENDPOINT/array --jq '. | length' --ge 6
     assertEquals 1 $?
 }
 
 testAssertingLT() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --lt 6
+    ./schmokin $ENDPOINT/array --jq '. | length' --lt 6
     assertEquals 0 $?
 }
 
 testAssertingLT_Fails() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --lt 5
+    ./schmokin $ENDPOINT/array --jq '. | length' --lt 5
     assertEquals 1 $?
 }
 
 testAssertingLE_Equals() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --le 5
+    ./schmokin $ENDPOINT/array --jq '. | length' --le 5
     assertEquals 0 $?
 }
 
 testAssertingLE_Lesser() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --le 6
+    ./schmokin $ENDPOINT/array --jq '. | length' --le 6
     assertEquals 0 $?
 }
 
 testAssertingLE_Fails() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --le 4
+    ./schmokin $ENDPOINT/array --jq '. | length' --le 4
     assertEquals 1 $?
 }
 
 
 testAssertingMultipleTimes() {
-    ./schmokin $ENDPOINT/array --jq-expr '. | length' --gt 4 -s 200
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 4 -s 200
     assertEquals 0 $?
 }
 
