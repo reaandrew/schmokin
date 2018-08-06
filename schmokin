@@ -23,7 +23,13 @@ do
         ;;
         -h|--help)
             echo "schmokin"
-            echo 
+            echo
+            echo "A wrapper for curl providing chainable assertions to create simple but powerful smoke tests all written in bash"
+            echo
+            echo "URL"
+            echo
+            echo "  https://schmok.in" 
+            echo
             echo "Usage:"
             echo
             echo "  schmokin <url> [schmokin-options]... [--] [curl-options]..."
