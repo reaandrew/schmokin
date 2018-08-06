@@ -1,5 +1,63 @@
 #! /bin/bash
 
+VERSION=VERSION_HERE #Build argument
+CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\/1.1/\1,\2/p"
+WIDTH=75
+FAILED=0
+
+for arg in "$@";
+do
+    case "$arg" in
+        -v|--version)
+            echo "schmokin"
+            echo 
+            printf "%-20s: %s\n" "version" "$VERSION"
+            printf "%-20s: %s\n" "sha1" "$CHECKSUM_SHA1"
+            shift
+            exit 0
+        ;;
+        -h|--help)
+            echo "schmokin"
+            echo 
+            echo "Usage:"
+            echo
+            echo "  schmokin <url> [schmokin-options]... [--] [curl-options]..."
+            echo "  schmokin -h | --help"
+            echo "  schmokin -v | --version"
+            echo
+            echo "Options:"
+            echo
+            echo " Assertions:"
+            echo
+            printf "    %-25s: %s\n" "--eq" "equals comparison"
+            printf "    %-25s: %s\n" "--gt" "greater than comparison"
+            printf "    %-25s: %s\n" "--ge" "greater than or equals comparison"
+            printf "    %-25s: %s\n" "--lt" "less than comparison"
+            printf "    %-25s: %s\n" "--le" "less than or equals comparison"
+            printf "    %-25s: %s\n" "--co" "contains comparison"
+            echo
+            echo " Extractors:"
+            echo
+            printf "    %-25s: %s\n" "--jq" "JQ expression extractor"
+            printf "    %-25s: %s\n" "--req-header" "HTTP Request Header extractor"
+            printf "    %-25s: %s\n" "--resp-header" "HTTP Response Header extractor"
+            printf "    %-25s: %s\n" "--status" "HTTP status extractor"
+            echo
+            echo "Examples"
+            echo
+            printf "    %-25s: %s\n" "Assert on HTTP status" 'schmokin $URL --status -eq 200'
+            printf "    %-25s: %s\n" "Range Assertions" 'schmokin $URL --status --gt 200 --lt 202'
+            printf "    %-25s: %s\n" "Using curl args" 'schmokin $URL --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"'
+            exit 0
+            ;;
+    esac
+done
+
 URL=$1
 export URL
 shift
@@ -34,14 +92,7 @@ CURL_ARGS+=("2>&1")
 
 DATA=$(eval curl "${CURL_ARGS[@]}" "$URL")
 
-VERSION=VERSION_HERE #Reaplced at build time 
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\/1.1/\1,\2/p"
-WIDTH=75
-FAILED=0
+#VERSION=VERSION_HERE #Reaplced at build time 
 HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
 HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
 RESULT=""
@@ -63,6 +114,7 @@ FAIL(){
 }
 
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
+
 
 while [ -n "$1" ]; do
     case "$1" in
@@ -150,10 +202,6 @@ while [ -n "$1" ]; do
         fi
         shift
        ;;
-    -v )
-		echo "version $VERSION"
-        exit 0
-        ;;
     * )
         ;;
     esac
