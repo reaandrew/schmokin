@@ -1,6 +1,6 @@
 .PHONY: test
 test: shunit2-2.1.7/
-	pip install --user -r requirements.txt
+	pip install -q --user -r requirements.txt
 	shellcheck schmokin
 	./schmokin_test
 

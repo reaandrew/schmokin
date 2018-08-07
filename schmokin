@@ -56,9 +56,9 @@ do
             echo
             echo "Examples"
             echo
-            printf "    %-25s: %s\n" "Assert on HTTP status" 'schmokin $URL --status -eq 200'
-            printf "    %-25s: %s\n" "Range Assertions" 'schmokin $URL --status --gt 200 --lt 202'
-            printf "    %-25s: %s\n" "Using curl args" 'schmokin $URL --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"'
+            printf "    %-25s: %s\n" "Assert on HTTP status" "schmokin $URL --status -eq 200"
+            printf "    %-25s: %s\n" "Range Assertions" "schmokin $URL --status --gt 200 --lt 202"
+            printf "    %-25s: %s\n" "Using curl args" "schmokin $URL --req-header 'X-FU' --eq 'BAR' -- -H 'X-FU: BAR'"
             exit 0
             ;;
     esac
