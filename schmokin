@@ -208,6 +208,9 @@ while [ -n "$1" ]; do
         fi
         shift
        ;;
+    --debug)
+        echo "$DATA"
+        ;;
     * )
         ;;
     esac
