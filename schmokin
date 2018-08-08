@@ -1,5 +1,8 @@
 #! /bin/bash
 
+touch ~/.schmokin/context
+. ~/.schmokin/context
+
 VERSION=VERSION_HERE #Build argument
 CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
 RED='\033[0;31m'
@@ -97,6 +100,7 @@ CURL_ARGS+=("-s")
 CURL_ARGS+=("2>&1")
 
 DATA=$(eval curl "${CURL_ARGS[@]}" "$URL")
+
 
 #VERSION=VERSION_HERE #Reaplced at build time 
 HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
@@ -208,6 +212,11 @@ while [ -n "$1" ]; do
         fi
         shift
        ;;
+    --export)
+        name=$2
+        echo "export $name=\"$RESULT\"" >> ~/.schmokin/context
+        shift
+        ;;
     --debug)
         echo "$DATA"
         ;;

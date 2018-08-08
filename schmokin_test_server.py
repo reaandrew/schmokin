@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import make_response
+from flask import request
 
 app = Flask(__name__)
 
@@ -24,5 +25,10 @@ def array():
     response = make_response(jsonify(data))
     response.headers.set('Content-Type', 'application/json')
     return response
+
+@app.route('/echo', methods=['POST'])
+def echo():
+    data = request.get_data()
+    return data
 
 app.run(port=40000)

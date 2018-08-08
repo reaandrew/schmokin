@@ -6,7 +6,8 @@ pid=$!
 sleep 1
 ENDPOINT=http://localhost:40000
 oneTimeTearDown(){
-    kill $pid 2>/dev/null
+    echo "Killing test python web server with PID $pid"
+    kill -9 $pid 2>/dev/null
 }
 
 # NOTE ABOUT ASSERTIONS
@@ -114,6 +115,16 @@ testAssertingOnContains(){
 
 testAddingExtraCurlArguments(){
     ./schmokin $ENDPOINT/array --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
+    assertEquals 0 $?
+}
+
+testExportingAndUsingVariable(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    # Post the appStatus value and assert on the value
+    ./schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"$appStatus\"}'
+
     assertEquals 0 $?
 }
 
