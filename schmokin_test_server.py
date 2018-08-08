@@ -2,6 +2,7 @@ from flask import Flask
 from flask import jsonify
 from flask import make_response
 from flask import request
+import json
 
 app = Flask(__name__)
 
@@ -11,6 +12,13 @@ def simple():
         'status': 'UP'        
     }
     return jsonify(data)
+
+@app.route("/pretty")
+def pretty():
+    data = {
+        'status': 'UP'
+    }
+    return json.dumps(data, indent=4, sort_keys=True)
 
 @app.route("/created")
 def created():

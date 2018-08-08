@@ -97,6 +97,7 @@ done
 
 CURL_ARGS+=("-v")
 CURL_ARGS+=("-s")
+CURL_ARGS+=("-o /tmp/schmokin-output")
 CURL_ARGS+=("2>&1")
 
 DATA=$(eval curl "${CURL_ARGS[@]}" "$URL")
@@ -134,8 +135,12 @@ while [ -n "$1" ]; do
        ;;
     --jq)
         msg=$2
-        JSON=$(echo "$DATA" | tail -n -1) 
-        RESULT=$(echo "$JSON" | jq "$2" | sed 's/\"//g')
+        RESULT=$(cat < "/tmp/schmokin-output" | jq "$2" | sed 's/\"//g')
+        shift
+       ;;
+    --raw)
+        msg=$2
+        RESULT=$(cat < "/tmp/schmokin-output")
         shift
        ;;
     --eq)

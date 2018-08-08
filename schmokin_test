@@ -118,6 +118,11 @@ testAddingExtraCurlArguments(){
     assertEquals 0 $?
 }
 
+testAssertingOnRawResponseBody(){
+    ./schmokin $ENDPOINT/echo --raw --eq 'UP' -- -X POST -d 'UP'
+    assertEquals 0 $?
+}
+
 testExportingAndUsingVariable(){
     # Store the status message of the application in a variable named appStatus
     ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
@@ -127,6 +132,16 @@ testExportingAndUsingVariable(){
 
     assertEquals 0 $?
 }
+
+#   testExportingAndUsingVariableInPath(){
+#       # Store the status message of the application in a variable named appStatus
+#       ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+#       # Post the appStatus value and assert on the value
+#       ./schmokin '$ENDPOINT/resources/$appStatus' --raw --eq 'UP'
+
+#       assertEquals 0 $?
+#   }
 
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2

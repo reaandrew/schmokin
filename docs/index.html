@@ -123,6 +123,27 @@
 					  </tbody>
 					</table>
                 </div>
+                <div class="col">
+                    <h3 class="text-secondary">Utilities</h3>
+					<table class="table text-left">
+					  <thead class="thead-dark">
+						<tr>
+						  <th scope="col">flag</th>
+						  <th scope="col">description</th>
+						</tr>
+					  </thead>
+					  <tbody>
+						<tr>
+						  <th scope="row">--export</th>
+						  <td>Export extracted variable</td>
+						</tr>
+						<tr>
+						  <th scope="row">--debug</th>
+						  <td>Show verbose curl output</td>
+						</tr>
+					  </tbody>
+					</table>
+                </div>
             </div>
             <div class="row">
                 <div class="col-12">
@@ -217,6 +238,19 @@
                             <h3 class="text-secondary">JQ Extractor</h3>
                             <div class="alert alert-secondary" role="alert">
                                 <pre class="mb-0"><code>schmokin $URL --jq '.status' --eq "UP"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-secondary">Export Utility</h3>
+                            <div class="alert alert-secondary" role="alert">
+                                <pre class="mb-0"><code># Store the status message of the application in a variable named appStatus
+./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+# Post the appStatus value and assert on the value
+./schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"$appStatus\"}'
+</code></pre>
                             </div>
                         </div>
                     </div>
