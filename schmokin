@@ -1,7 +1,9 @@
 #! /bin/bash
 
 set -e
+
 targetDirectory=~/.schmokin
+mkdir -p $targetDirectory
 
 initialize_schmokin_files(){
     if [ ! -f "$targetDirectory/timestamp" ]; then
