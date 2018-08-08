@@ -20,6 +20,10 @@ def pretty():
     }
     return json.dumps(data, indent=4, sort_keys=True)
 
+@app.route("/resources/<resource>")
+def resources(resource):
+    return resource
+
 @app.route("/created")
 def created():
     data = {

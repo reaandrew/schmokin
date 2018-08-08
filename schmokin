@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 touch ~/.schmokin/context
 . ~/.schmokin/context
 
@@ -67,7 +69,7 @@ do
     esac
 done
 
-URL=$1
+URL=$(eval echo "$1")
 export URL
 shift
 
@@ -97,10 +99,17 @@ done
 
 CURL_ARGS+=("-v")
 CURL_ARGS+=("-s")
-CURL_ARGS+=("-o /tmp/schmokin-output")
+CURL_ARGS+=("-o /tmp/schmokin-response")
+CURL_ARGS+=("> /tmp/schmokin-output")
 CURL_ARGS+=("2>&1")
 
-DATA=$(eval curl "${CURL_ARGS[@]}" "$URL")
+if ! eval curl "${CURL_ARGS[@]}" "$URL"; then
+    echo "CURL ERROR"
+    cat /tmp/schmokin-output
+    exit 1
+fi
+
+DATA=$(cat /tmp/schmokin-output)
 
 
 #VERSION=VERSION_HERE #Reaplced at build time 
@@ -135,13 +144,12 @@ while [ -n "$1" ]; do
        ;;
     --jq)
         msg=$2
-        RESULT=$(cat < "/tmp/schmokin-output" | jq "$2" | sed 's/\"//g')
+        RESULT=$(cat < "/tmp/schmokin-response" | jq "$2" | sed 's/\"//g')
         shift
        ;;
     --resp-body)
         msg=$2
-        RESULT=$(cat < "/tmp/schmokin-output")
-        shift
+        RESULT=$(cat < "/tmp/schmokin-response")
        ;;
     --eq)
         statement="expected ${msg:0:60} = $2 actual $RESULT"
@@ -219,7 +227,9 @@ while [ -n "$1" ]; do
        ;;
     --export)
         name=$2
-        echo "export $name=\"$RESULT\"" >> ~/.schmokin/context
+        message="export $name=\"$RESULT\""
+        echo "$message" >> ~/.schmokin/context
+        PASS "$message" "PASS"
         shift
         ;;
     --debug)
