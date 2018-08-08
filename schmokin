@@ -138,7 +138,7 @@ while [ -n "$1" ]; do
         RESULT=$(cat < "/tmp/schmokin-output" | jq "$2" | sed 's/\"//g')
         shift
        ;;
-    --raw)
+    --resp-body)
         msg=$2
         RESULT=$(cat < "/tmp/schmokin-output")
         shift
