@@ -3,7 +3,7 @@
 set -e
 
 touch ~/.schmokin/context
-. ~/.schmokin/context
+. "$(realpath ~/.schmokin/context)"
 
 VERSION=VERSION_HERE #Build argument
 CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
