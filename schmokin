@@ -3,7 +3,9 @@
 set -e
 
 touch ~/.schmokin/context
-. "$(realpath ~/.schmokin/context)"
+
+# shellcheck disable=SC1073
+. ~/.schmokin/context
 
 VERSION=VERSION_HERE #Build argument
 CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
