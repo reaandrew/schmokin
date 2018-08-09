@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-12">
                             <div class="alert alert-secondary text-left code" role="alert">
-                                <pre class="mb-0"><code>curl -Ls https://github.com/reaandrew/schmokin/releases/download/0.1.0/schmokin_install | bash</code></pre>
+                                <pre class="mb-0"><code>curl -Ls https://github.com/reaandrew/schmokin/releases/download/latest/schmokin_install | bash</code></pre>
                             </div>
                         </div>
                     </div>
@@ -269,5 +269,35 @@ schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"
                 </div>
             </div>
 		</div>
+        <canvas id="canvas"></canvas>
+        <script src="/js/smoke.js"></script>
+        <script>
+
+            function getRandomInt(min, max) {
+                  return Math.floor(Math.random() * Math.floor(max-min)) + min;
+            }
+
+            var can = document.getElementById("canvas");
+            var ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                  can.style.width = window.innerWidth + "px";
+                  setTimeout(function() {
+                          can.style.height = window.innerHeight + "px";
+                        }, 0);
+            };
+
+            // Webkit/Blink will fire this on load, but Gecko doesn't.
+            window.onresize = resizeCanvas;
+
+            // So we fire it manually...
+            resizeCanvas();
+            var party = smokemachine(ctx,[108,117,125]);
+            party.start()
+
+            window.setInterval(function(){
+                party.addsmoke(getRandomInt(0, window.innerWidth),getRandomInt(0, window.innerHeight),getRandomInt(0, 50))
+            },250);
+        </script>
 	</body>
 </html>
