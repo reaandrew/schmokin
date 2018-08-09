@@ -16,6 +16,9 @@ stages:
 	if: branch = master
 jobs:
     include:
+        - stage: test
+          script:
+            - make test
 		- stage: package
 		  script:
 			- mkdir -p dist/
