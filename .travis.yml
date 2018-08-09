@@ -7,30 +7,16 @@ branches:
   - release
   - develop
   - feature/.*
-stages:
-  - test
-  - package
-  - name: deploy_latest
-    if: branch = develop
-  - name: deploy_master
-	if: branch = master
-jobs:
-    include:
-        - stage: test
-          script:
-            - make test
-		- stage: package
-		  script:
-			- mkdir -p dist/
-			- cp ./schmokin_install dist/
-			- cp ./schmokin dist/
-			- sha1sum schmokin > dist/schmokin.sha1
-			- sed -i "s/0.1.0/\"$(cat VERSION)\"/g" dist/schmokin
-			- sed -i "s/CHECKSUM_HERE/\"$(sha1sum schmokin | cut -d ' ' -f1)\"/g" dist/schmokin
-			- curl -L https://github.com/tcnksm/ghr/releases/download/v0.10.1/ghr_v0.10.1_linux_amd64.tar.gz | tar xz
-        - stage: deploy_latest
-		  script:
-      		- ./ghr_v0.10.1_linux_amd64/ghr --delete --username reaandrew --token $GITHUB_TOKEN latest dist/
-        - stage: deploy_master
-		  script:
-      		- ./ghr_v0.10.1_linux_amd64/ghr --username reaandrew --token $GITHUB_TOKEN $(cat VERSION) dist/
+script:
+    - make test
+after_success:
+  - APP_VERSION="$(cat VERSION)"
+  - if [ "$TRAVIS_BRANCH" == "develop" ]; then APP_VERSION="latest"; fi;
+  - mkdir -p dist/
+  - cp ./schmokin_install dist/
+  - cp ./schmokin dist/
+  - sha1sum schmokin > dist/schmokin.sha1
+  - sed -i "s/0.1.0/\"$(cat VERSION)\"/g" dist/schmokin
+  - sed -i "s/CHECKSUM_HERE/\"$(sha1sum schmokin | cut -d ' ' -f1)\"/g" dist/schmokin
+  - curl -L https://github.com/tcnksm/ghr/releases/download/v0.10.1/ghr_v0.10.1_linux_amd64.tar.gz | tar xz
+  - ./ghr_v0.10.1_linux_amd64/ghr --delete --username reaandrew --token $GITHUB_TOKEN "$APP_VERSION" dist/
