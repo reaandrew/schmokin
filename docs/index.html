@@ -292,11 +292,11 @@ schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"
 
             // So we fire it manually...
             resizeCanvas();
-            var party = smokemachine(ctx,[108,117,125]);
+            var party = smokemachine(ctx,[211,211,211]);
             party.start()
 
             window.setInterval(function(){
-                party.addsmoke(getRandomInt(0, window.innerWidth),getRandomInt(0, window.innerHeight),getRandomInt(0, 50))
+                party.addsmoke(getRandomInt(0, window.innerWidth),getRandomInt(0, window.innerHeight),getRandomInt(10, 50))
             },250);
         </script>
 	</body>
