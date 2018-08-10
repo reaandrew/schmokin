@@ -19,30 +19,76 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-$project
+Schmokin
 ========
 
-$project will solve your problem of where to start with documentation,
-by providing a basic explanation of how to do it easily.
+A wrapper for curl providing chainable assertions to create simple but powerful smoke tests all written in bash
 
 Look how easy it is to use:
 
-    import project
-    # Get your stuff done
-    project.do_stuff()
+    ./schmokin $URL --jq '.status' --eq "UP"
+
+Look how it proxies all curl arguments... to curl!
+
+    ./schmokin $URL --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
 
 Features
 --------
 
-- Be awesome
-- Make things faster
+- Enrich the power of curl by wrapping it
+- Make it quick and easy to smoke test your web application.
+- Combine other powerful tools like JQ
 
 Installation
 ------------
 
-Install $project by running:
+Install Schmokin by running:
 
-    install project
+    curl -Ls https://github.com/reaandrew/schmokin/releases/download/latest/schmokin_install | bash
+
+Getting Started
+---------------
+
+Use Schmokin by running
+
+    schmokin <url> [schmokin-args] -- [curl-args]
+
+
+Assertions
+----------
+
+--eq	equals
+--gt	greater than
+--ge	greater than or equals
+--lt	less than
+--le	less than or equals
+--co	contains
+
+Extractors
+----------
+
+--jq	JQ expression
+--req-header	HTTP Request Header
+--resp-header	HTTP Response Header
+--resp-body	HTTP Response Body
+--status	HTTP Status
+
+Reporters
+---------
+
+TODO
+
+Utilities
+---------
+
+--export	Export extracted variable
+--debug	Show verbose curl output
+
+Environment Variables
+---------------------
+
+Examples
+--------
 
 Contribute
 ----------
