@@ -20,7 +20,7 @@ vercomp () {
         return 0
     fi
     local IFS=.
-    local i ver1=($1) ver2=($2)
+    local i ver1=("$1") ver2=("$2")
     # fill empty fields in ver1 with zeros
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
     do
@@ -54,18 +54,16 @@ initialize_schmokin_files
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+BOLD='\e[1m'
 NOTICE='\e[30;48;5;82m'
-CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\/1.1/\1,\2/p"
-WIDTH=75
+CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\\/1.1/\\1,\\2/p"
 FAILED=0
 
 VERSION="0.1.0" #Build argument
 CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
 
 duration="$(($(date +%s) - $(cat $targetDirectory/timestamp)))"
-#if [ "$duration" -gt "172800" ];
-if [ "$duration" -gt "1" ];
+if [ "$duration" -gt "172800" ];
 then
     date +%s > $targetDirectory/timestamp
     LATEST_VERSION=$(curl -s https://github.com/reaandrew/schmokin/releases/latest 2>&1 | grep -oP "[0-9.]{2,}")
@@ -86,8 +84,8 @@ do
         -v|--version)
             echo "schmokin"
             echo 
-            printf "%-20s: %s\n" "version" "$VERSION"
-            printf "%-20s: %s\n" "sha1" "$CHECKSUM_SHA1"
+            printf "%-20s: %s\\n" "version" "$VERSION"
+            printf "%-20s: %s\\n" "sha1" "$CHECKSUM_SHA1"
             shift
             exit 0
         ;;
@@ -110,25 +108,25 @@ do
             echo
             echo " Assertions:"
             echo
-            printf "    %-25s: %s\n" "--eq" "equals comparison"
-            printf "    %-25s: %s\n" "--gt" "greater than comparison"
-            printf "    %-25s: %s\n" "--ge" "greater than or equals comparison"
-            printf "    %-25s: %s\n" "--lt" "less than comparison"
-            printf "    %-25s: %s\n" "--le" "less than or equals comparison"
-            printf "    %-25s: %s\n" "--co" "contains comparison"
+            printf "    %-25s: %s\\n" "--eq" "equals comparison"
+            printf "    %-25s: %s\\n" "--gt" "greater than comparison"
+            printf "    %-25s: %s\\n" "--ge" "greater than or equals comparison"
+            printf "    %-25s: %s\\n" "--lt" "less than comparison"
+            printf "    %-25s: %s\\n" "--le" "less than or equals comparison"
+            printf "    %-25s: %s\\n" "--co" "contains comparison"
             echo
             echo " Extractors:"
             echo
-            printf "    %-25s: %s\n" "--jq" "JQ expression extractor"
-            printf "    %-25s: %s\n" "--req-header" "HTTP Request Header extractor"
-            printf "    %-25s: %s\n" "--resp-header" "HTTP Response Header extractor"
-            printf "    %-25s: %s\n" "--status" "HTTP status extractor"
+            printf "    %-25s: %s\\n" "--jq" "JQ expression extractor"
+            printf "    %-25s: %s\\n" "--req-header" "HTTP Request Header extractor"
+            printf "    %-25s: %s\\n" "--resp-header" "HTTP Response Header extractor"
+            printf "    %-25s: %s\\n" "--status" "HTTP status extractor"
             echo
             echo "Examples"
             echo
-            printf "    %-25s: %s\n" "Assert on HTTP status" "schmokin $URL --status -eq 200"
-            printf "    %-25s: %s\n" "Range Assertions" "schmokin $URL --status --gt 200 --lt 202"
-            printf "    %-25s: %s\n" "Using curl args" "schmokin $URL --req-header 'X-FU' --eq 'BAR' -- -H 'X-FU: BAR'"
+            printf "    %-25s: %s\\n" "Assert on HTTP status" "schmokin $URL --status -eq 200"
+            printf "    %-25s: %s\\n" "Range Assertions" "schmokin $URL --status --gt 200 --lt 202"
+            printf "    %-25s: %s\\n" "Using curl args" "schmokin $URL --req-header 'X-FU' --eq 'BAR' -- -H 'X-FU: BAR'"
             exit 0
             ;;
     esac
@@ -153,9 +151,9 @@ do
             then
                 if [[ $arg =~ $whitespace ]]
                 then
-                    CURL_ARGS+=(\"$arg\")
+                    CURL_ARGS+=(\""$arg"\")
                 else
-                    CURL_ARGS+=($arg)
+                    CURL_ARGS+=("$arg")
                 fi
             fi
             ;;
@@ -184,17 +182,17 @@ RESULT=""
 msg=""
 
 HEADING(){
-    printf "${BLUE}%s %s${NC}\n" "$@"
-    printf '%0.1s' "-"{1..85}
-    printf '\n'
+    #printf "${BLUE}%s %s${NC}\\n" "$@"
+    printf "${BOLD}%s %s${NC}\\n" "$@"
+    echo ""
 }
 
 PASS(){
-    printf "%-${WIDTH}s [${GREEN}%s${NC}]\n" "$1" "${2:-PASS}"
+    printf "${GREEN}%-6s${NC}: %s \\n" "${2:-PASS}" "$1" 
 }
 
 FAIL(){
-    printf "%-${WIDTH}s [${RED}%s${NC}]\n" "$1" "${2:-FAIL}"
+    printf "${RED}%-6s${NC}: %s \\n" "${2:-FAIL}" "$1" 
     FAILED=1
 }
 
@@ -306,14 +304,13 @@ while [ -n "$1" ]; do
     shift
 done
 
-printf '%0.1s' "-"{1..85}
-printf '\n'
+echo ""
 if [ "$FAILED" = "1" ];
 then
-    FAIL "RESULT" "FAILURE"
+    printf "%s : ${RED}%s${NC}\\n" "RESULT" "FAILURE" 
     exit $FAILED
 else
-    PASS "RESULT" "SUCCESS"
+    printf "%s : ${GREEN}%s${NC}\\n" "RESULT" "SUCCESS" 
     exit 0
 fi
-
+echo ""
