@@ -13,13 +13,6 @@ def simple():
     }
     return jsonify(data)
 
-@app.route("/pretty")
-def pretty():
-    data = {
-        'status': 'UP'
-    }
-    return json.dumps(data, indent=4, sort_keys=True)
-
 @app.route("/resources/<resource>")
 def resources(resource):
     return resource
@@ -42,5 +35,22 @@ def array():
 def echo():
     data = request.get_data()
     return data
+
+@app.route("/pretty/large")
+def pretty_large():
+    data = {
+        'status': 'UP'
+    }
+    for i in range(1,3):
+        data[i] = 'status number' + str(i)
+
+    return json.dumps(data, indent=4, sort_keys=True)
+
+@app.route("/pretty")
+def pretty():
+    data = {
+        'status': 'UP'
+    }
+    return json.dumps(data, indent=4, sort_keys=True)
 
 app.run(port=40000)

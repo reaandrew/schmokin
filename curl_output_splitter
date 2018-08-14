@@ -1,0 +1,20 @@
+#! /bin/bash
+
+target=/tmp/schmokin/curl-output
+mkdir -p "$target"
+COUNT=1
+:> "$target/$COUNT.log"
+while IFS='$\n' read -r line; do
+    echo "$line" >> "$target/$COUNT.log" 
+    if echo "$line" | grep -q "Closing connection"; then
+        COUNT=$((COUNT+1))
+        :> "$target/$COUNT.log"
+    fi
+done
+
+rm -f "$target/$COUNT.log"
+
+echo "The following output files have been created"
+
+ls "$target"
+
