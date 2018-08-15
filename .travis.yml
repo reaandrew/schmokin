@@ -18,7 +18,7 @@ after_success:
   - cp ./schmokin_install dist/
   - cp ./schmokin dist/
   - cp -r ./libs dist/
-  - tar -czvf dist/schmokin.tar.gz dist/libs/ dist/schmokin
+  - cd dist && tar -czvf schmokin.tar.gz libs/ schmokin
   - sha1sum schmokin > dist/schmokin.sha1
   - sed -i "s/0.1.0/\"$(cat VERSION)\"/g" dist/schmokin
   - sed -i "s/CHECKSUM_HERE/\"$(sha1sum schmokin | cut -d ' ' -f1)\"/g" dist/schmokin
