@@ -2,6 +2,7 @@ from flask import Flask
 from flask import jsonify
 from flask import make_response
 from flask import request
+from flask import redirect
 import json
 
 app = Flask(__name__)
@@ -12,6 +13,14 @@ def simple():
         'status': 'UP'        
     }
     return jsonify(data)
+
+@app.route("/pretty/redirect")
+def pretty_redirect():
+    data = {
+        'status': 'UP'
+    }
+    return json.dumps(data, indent=4, sort_keys=True)
+
 
 @app.route("/pretty")
 def pretty():

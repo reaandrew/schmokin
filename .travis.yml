@@ -1,5 +1,7 @@
 language: bash
 sudo: false
+env:
+  - TEST=1
 branches:
   only:
   - master
@@ -15,6 +17,7 @@ after_success:
   - mkdir -p dist/
   - cp ./schmokin_install dist/
   - cp ./schmokin dist/
+  - cp -r libs dist/
   - sha1sum schmokin > dist/schmokin.sha1
   - sed -i "s/0.1.0/\"$(cat VERSION)\"/g" dist/schmokin
   - sed -i "s/CHECKSUM_HERE/\"$(sha1sum schmokin | cut -d ' ' -f1)\"/g" dist/schmokin
