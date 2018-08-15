@@ -4,7 +4,9 @@ mkdir -p ~/.schmokin
 
 echo 'export PATH=~/.schmokin/:$PATH' >> ~/.profile
 
-curl -sLo ~/.schmokin/schmokin "https://github.com/reaandrew/schmokin/releases/download/latest/schmokin"
+curl -sLo ~/.schmokin/schmokin.tar.gz "https://github.com/reaandrew/schmokin/releases/download/latest/schmokin.tar.gz"
+
+tar -xzvf ~/.schmokin/schmokin.tar.gz -C ~/.schmokin
 
 chmod +x ~/.schmokin/schmokin
 
