@@ -2,7 +2,7 @@ while [ -n "$1" ]; do
     case "$1" in
     --status)
        msg=$(printf "HTTP Status")
-       RESULT=$(echo "$DATA" | sed -rn 's/.*HTTP\/1.[0-9].*([0-9]{3}).*/\1/p' | sed 's/\r//g')
+       RESULT=$(echo "$DATA" | sed -rn 's/.*HTTP\/[0-9.]+.*([0-9]{3}).*/\1/p' | sed 's/\r//g')
        ;;
     --jq)
         msg=$2
