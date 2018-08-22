@@ -2,6 +2,7 @@ from flask import Flask
 from flask import jsonify
 from flask import make_response
 from flask import request
+from flask import redirect
 import json
 
 app = Flask(__name__)
@@ -44,6 +45,13 @@ def pretty_large():
     for i in range(1,3):
         data[i] = 'status number' + str(i)
 
+    return json.dumps(data, indent=4, sort_keys=True)
+
+@app.route("/pretty/redirect")
+def pretty_redirect():
+    data = {
+        'status': 'UP'
+    }
     return json.dumps(data, indent=4, sort_keys=True)
 
 @app.route("/pretty")

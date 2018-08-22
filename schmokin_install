@@ -4,9 +4,9 @@ mkdir -p ~/.schmokin
 
 echo 'export PATH=~/.schmokin/:$PATH' >> ~/.profile
 
-LATEST=$(curl -s https://github.com/reaandrew/schmokin/releases/latest | sed -rn 's/.*([0-9\.]{5,}).*/\1/p')
+curl -sLo ~/.schmokin/schmokin.tar.gz "https://github.com/reaandrew/schmokin/releases/download/latest/schmokin.tar.gz"
 
-curl -sLo ~/.schmokin/schmokin "https://github.com/reaandrew/schmokin/releases/download/$LATEST/schmokin"
+tar -xzvf ~/.schmokin/schmokin.tar.gz -C ~/.schmokin
 
 chmod +x ~/.schmokin/schmokin
 

@@ -5,192 +5,53 @@
 set -e
 
 targetDirectory=~/.schmokin
+if [[ ! -z "${SCHMOKIN_TEST}" ]]; then
+    targetDirectory=./
+fi
+
 mkdir -p $targetDirectory
 
-initialize_schmokin_files(){
-    if [ ! -f "$targetDirectory/timestamp" ]; then
-        date +%s > "$targetDirectory/timestamp"
-    fi
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+GREEN='\033[0;32m'
+BOLD='\e[1m'
+CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\\/1.1/\\1,\\2/p"
+FAILED=0
+VERSION="0.1.0" #Build argument
+CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
+CURL_ARGS=()
+EXTRA_PARAMS=0
+RESULT=""
+msg=""
 
-    touch "$targetDirectory/context"
-}
+export CHECKSUM_SHA1
+export VERSION
+export CURL_ARGS
+export EXTRA_PARAMS
+export BOLD
+export RESULT
+export msg
 
-# https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
-vercomp () {
-    echo "VerComp"
-    if [[ "$1" == "$2" ]]
-    then
-        return 0
-    fi
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            echo "Returning 1"
-            return 1
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            echo "Returning 2"
-            return 2
-        fi
-    done
-
-    echo "Returning 0"
-    return 0
-}
-
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/functions.sh"
 
 initialize_schmokin_files
 
 # shellcheck disable=SC1073,SC1090
 . $targetDirectory/context
 
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-#NOTICE='\e[30;48;5;82m'
-CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\/1.1/\1,\2/p"
-WIDTH=75
-FAILED=0
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/check_version.sh"
 
-VERSION="0.1.0" #Build argument
-CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
-
-#duration="$(($(date +%s) - $(cat $targetDirectory/timestamp)))"
-#   #if [ "$duration" -gt "172800" ];
-#   if [ "$duration" -gt "1" ];
-#   then
-#       date +%s > $targetDirectory/timestamp
-#       echo "LATEST VERSION $LATEST_VERSION"
-#       LATEST_VERSION=$(curl -s https://github.com/reaandrew/schmokin/releases/latest 2>&1 | grep -oP "[0-9.]{2,}")
-#       #set +e
-#       vercomp "$VERSION" "$LATEST_VERSION"
-#       VER_DIFF="$?"
-#       echo "VER_DIFF"
-#       #set -e
-#       if [ "$VER_DIFF" -eq "2" ];
-#       then
-#           echo -e "${NOTICE}Notice ${NC} A new version of schmokin is available. Visit https://schmok.in to download."
-#       fi
-#   fi
-
-
-for arg in "$@";
-do
-    case "$arg" in
-        -v|--version)
-            echo "schmokin"
-            echo 
-            printf "%-20s: %s\n" "version" "$VERSION"
-            printf "%-20s: %s\n" "sha1" "$CHECKSUM_SHA1"
-            shift
-            exit 0
-        ;;
-        -h|--help)
-            echo "schmokin"
-            echo
-            echo "A wrapper for curl providing chainable assertions to create simple but powerful smoke tests all written in bash"
-            echo
-            echo "URL"
-            echo
-            echo "  https://schmok.in" 
-            echo
-            echo "Usage:"
-            echo
-            echo "  schmokin <url> [schmokin-options]... [--] [curl-options]..."
-            echo "  schmokin -h | --help"
-            echo "  schmokin -v | --version"
-            echo
-            echo "Options:"
-            echo
-            echo " Assertions:"
-            echo
-            printf "    %-25s: %s\n" "--eq" "equals comparison"
-            printf "    %-25s: %s\n" "--gt" "greater than comparison"
-            printf "    %-25s: %s\n" "--ge" "greater than or equals comparison"
-            printf "    %-25s: %s\n" "--lt" "less than comparison"
-            printf "    %-25s: %s\n" "--le" "less than or equals comparison"
-            printf "    %-25s: %s\n" "--co" "contains comparison"
-            echo
-            echo " Extractors:"
-            echo
-            printf "    %-25s: %s\n" "--jq" "JQ expression extractor"
-            printf "    %-25s: %s\n" "--req-header" "HTTP Request Header extractor"
-            printf "    %-25s: %s\n" "--resp-header" "HTTP Response Header extractor"
-            printf "    %-25s: %s\n" "--status" "HTTP status extractor"
-            echo
-            echo "Examples"
-            echo
-            printf "    %-25s: %s\n" "Assert on HTTP status" "schmokin $URL --status -eq 200"
-            printf "    %-25s: %s\n" "Range Assertions" "schmokin $URL --status --gt 200 --lt 202"
-            printf "    %-25s: %s\n" "Using curl args" "schmokin $URL --req-header 'X-FU' --eq 'BAR' -- -H 'X-FU: BAR'"
-            exit 0
-            ;;
-    esac
-done
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/meta.sh"
 
 URL=$(eval echo "$1")
 export URL
 shift
 
-CURL_ARGS=()
-EXTRA_PARAMS=0
-# Loop over the variables to get any args after the --
-whitespace="[[:space:]]"
-for arg in "$@";
-do
-    case "$arg" in
-        "--")
-            EXTRA_PARAMS=1
-            ;;
-        *)
-            if [ "$EXTRA_PARAMS" -eq 1 ];
-            then
-                if [[ $arg =~ $whitespace ]]
-                then
-                    CURL_ARGS+=(\"$arg\")
-                else
-                    CURL_ARGS+=($arg)
-                fi
-            fi
-            ;;
-    esac
-done
-
-EXTRA_ARGS=()
-EXTRA_ARGS+=("-v")
-EXTRA_ARGS+=("-s")
-EXTRA_ARGS+=("-o /tmp/schmokin-response")
-EXTRA_ARGS+=("> /tmp/schmokin-output")
-EXTRA_ARGS+=("2>&1")
-
-CURL_ARGS=( "${EXTRA_ARGS[@]}" "${CURL_ARGS[@]}" )
-
-UPDATED_ARGS=()
-
-for i in "${!CURL_ARGS[@]}"; do 
-      VALUE="${CURL_ARGS[$i]}"
-      if [ "$VALUE" = "--next" ]; then
-          CURL_ARGS=( "${CURL_ARGS[@]:0:$i}" "${CURL_ARGS[@]:$i}" "-o /tmp/schmokin-response" )
-      fi
-done
-
-echo "CURL ARGS ${CURL_ARGS[@]}"
-#CURL_ARGS=( "${UPDATED_ARGS[@]}" )
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/read_extra_curl_args.sh"
 
 if ! eval curl "${CURL_ARGS[@]}" "$URL"; then
     echo "CURL ERROR"
@@ -200,144 +61,20 @@ fi
 
 DATA=$(cat /tmp/schmokin-output)
 
-
-#VERSION=VERSION_HERE #Reaplced at build time 
 HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
 HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
-RESULT=""
-msg=""
-
-HEADING(){
-    printf "${BLUE}%s %s${NC}\n" "$@"
-    printf '%0.1s' "-"{1..85}
-    printf '\n'
-}
-
-PASS(){
-    printf "%-${WIDTH}s [${GREEN}%s${NC}]\n" "$1" "${2:-PASS}"
-}
-
-FAIL(){
-    printf "%-${WIDTH}s [${RED}%s${NC}]\n" "$1" "${2:-FAIL}"
-    FAILED=1
-}
-
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/process_schmokin_args.sh"
 
-while [ -n "$1" ]; do
-    case "$1" in
-    --status)
-       msg=$(printf "HTTP Status")
-       RESULT=$(echo "$DATA" | sed -rn 's/.*HTTP\/1.[0-9].*([0-9]{3}).*/\1/p' | sed 's/\r//g')
-       ;;
-    --jq)
-        msg=$2
-        RESULT=$(cat < "/tmp/schmokin-response" | jq "$2" | sed 's/\"//g')
-        shift
-       ;;
-    --resp-body)
-        msg=$2
-        RESULT=$(cat < "/tmp/schmokin-response")
-       ;;
-    --eq)
-        statement="expected ${msg:0:60} = $2 actual $RESULT"
-        if [ "$RESULT" = "$2" ];
-        then
-         PASS "$statement" "PASS"
-        else
-         FAIL "$statement" "FAIL"
-        fi
-        shift
-       ;;
-    --gt)
-        statement="expected ${msg:0:60} > $2 actual $RESULT"
-        if [ "$RESULT" -gt "$2" ];
-        then
-         PASS "$statement" "PASS"
-        else
-         FAIL "$statement" "FAIL"
-        fi
-        shift
-       ;;
-    --ge)
-        statement="expected ${msg:0:60} >= $2 actual $RESULT"
-        if [ "$RESULT" -ge "$2" ];
-        then
-         PASS "$statement" "PASS"
-        else
-         FAIL "$statement" "FAIL"
-        fi
-        shift
-       ;;
-    --lt)
-        statement="expected ${msg:0:60} < $2 actual $RESULT"
-        if [ "$RESULT" -lt "$2" ];
-        then
-         PASS "$statement" "PASS"
-        else
-         FAIL "$statement" "FAIL"
-        fi
-        shift
-       ;;
-    --le)
-        statement="expected ${msg:0:60} <= $2 actual $RESULT"
-        if [ "$RESULT" -le "$2" ];
-        then
-         PASS "$statement" "PASS"
-        else
-         FAIL "$statement" "FAIL"
-        fi
-        shift
-       ;;
-    --resp-header)
-        msg="response header $2"
-        EXPECTED=$2
-        RESULT=$(echo "$DATA" \
-            | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
-        shift
-        ;;
-    --req-header)
-        msg="request header $2"
-        EXPECTED=$2
-        RESULT=$(echo "$DATA" \
-            | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
-        shift
-        ;;
-    --co)
-        statement="expected ${RESULT:0:30} to contain ${2:0:30}"
-        if  echo "$RESULT" | grep -q "$2";
-        then
-         PASS "$statement" "PASS"
-        else
-         FAIL "$statement" "FAIL"
-        fi
-        shift
-       ;;
-    --export)
-        name=$2
-        message="export $name=\"$RESULT\""
-        echo "$message" >> $targetDirectory/context
-        PASS "$message" "PASS"
-        shift
-        ;;
-    --debug)
-        echo "$DATA"
-        ;;
-    * )
-        ;;
-    esac
-    shift
-done
-
-printf '%0.1s' "-"{1..85}
-printf '\n'
+echo ""
 if [ "$FAILED" = "1" ];
 then
-    FAIL "RESULT" "FAILURE"
+    printf "%s : ${RED}%s${NC}\\n" "RESULT" "FAILURE" 
     exit $FAILED
 else
-    PASS "RESULT" "SUCCESS"
+    printf "%s : ${GREEN}%s${NC}\\n" "RESULT" "SUCCESS" 
     exit 0
 fi
-
+echo ""

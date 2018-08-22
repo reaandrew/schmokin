@@ -3,7 +3,7 @@
 
 python schmokin_test_server.py > test-output.log 2>&1  &
 pid=$!  
-sleep 1
+sleep 2
 export ENDPOINT=http://localhost:40000
 oneTimeTearDown(){
     echo "Killing test python web server with PID $pid"
