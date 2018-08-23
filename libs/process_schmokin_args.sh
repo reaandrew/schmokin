@@ -9,7 +9,7 @@ while [ -n "$1" ]; do
         RESULT=$(cat < "/tmp/schmokin-response" | jq "$2" | sed 's/\"//g')
         shift
        ;;
-    --resp-body)
+    --res-body)
         msg=$2
         RESULT=$(cat < "/tmp/schmokin-response")
        ;;
@@ -63,7 +63,7 @@ while [ -n "$1" ]; do
         fi
         shift
        ;;
-    --resp-header)
+    --res-header)
         msg="response header $2"
         EXPECTED=$2
         RESULT=$(echo "$DATA" \
