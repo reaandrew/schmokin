@@ -55,6 +55,6 @@ def echo_json():
 @app.route('/echo', methods=['POST'])
 def echo():
     data = request.get_data()
-    return json.loads(data)
+    return data
 
 app.run(port=40000)

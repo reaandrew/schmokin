@@ -4,19 +4,16 @@
 
 A simple utility which wraps curl and allows you to make assertions on the HTTP requests, responses, timings and other metrics provided by curl.
 
-[![asciicast](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO.png)](https://asciinema.org/a/u2mdeeHToo7mBdbnEBBjKAMqO)
-
 ## Under the hood
 
 - Made with bash.
 - Uses [https://stedolan.github.io/jq/](jq) and the jq expression syntax to make JSON assertions, **jq** needs to be installed.
-- Pretty printed JSON output is not yet supported.
-- Uses shunit and python to test (check out `schmokin_test`)
-    - Probably moving to a bash only web server for the fun of it.
-- Should work with HTTP/1.1 and HTTP1.0 but not HTTP/2 yet.
+- Uses shunit, shellcheck and python to test (check out `schmokin_test`).
+- Tested with HTTP/1.0, HTTP1.1 and HTTP/2. 
 - The Python Web Server is currently Flask and is return HTTP/1.0 output.
-- Not tested with HTTPS.
-- Currently requires either an Ubuntu or Debian installation.
+- Currently only Linux is supported (changing use of sed to awk should make this available for OSX too).
+- Assertions on the request is not supported, only the response.
+- The curl argument `--next` is not currently supported.
 
 ## Testing
 
@@ -88,7 +85,7 @@ schmokin $URL --jq '. | length' --gt 4 -s 200
 **Assert equals on a Response Header**
 
 ```
-schmokin $URL --resp-header "Content-Type" --eq 'application/json'
+schmokin $URL --res-header "Content-Type" --eq 'application/json'
 ```
 
 **Assert equals on a Request Header**
@@ -100,7 +97,7 @@ schmokin $URL --req-header "Content-Type" --eq 'application/json'
 **Assert using contains**
 
 ```
-schmokin $URL --resp-header "Server" --contains 'Python'
+schmokin $URL --res-header "Server" --contains 'Python'
 ```
 
 **Add additional CURL arguments**
