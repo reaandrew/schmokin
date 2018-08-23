@@ -113,11 +113,11 @@
 						  <td>HTTP Request Header</td>
 						</tr>
 						<tr>
-						  <th scope="row">--resp-header</th>
+						  <th scope="row">--res-header</th>
 						  <td>HTTP Response Header</td>
 						</tr>
 						<tr>
-						  <th scope="row">--resp-body</th>
+						  <th scope="row">--res-body</th>
 						  <td>HTTP Response Body</td>
 						</tr>
 						<tr>
@@ -233,7 +233,7 @@
                         <div class="col">
                             <h3 class="text-secondary">Response Header Extractor</h3>
                             <div class="alert alert-secondary" role="alert">
-                                <pre class="mb-0"><code>schmokin $URL --resp-header "Content-Type" --eq 'application/json'</code></pre>
+                                <pre class="mb-0"><code>schmokin $URL --res-header "Content-Type" --eq 'application/json'</code></pre>
                             </div>
                         </div>
                     </div>
@@ -241,7 +241,7 @@
                         <div class="col">
                             <h3 class="text-secondary">Response Body Extractor</h3>
                             <div class="alert alert-secondary" role="alert">
-                                <pre class="mb-0"><code>schmokin $URL --resp-body --eq 'UP' -- -X POST -d 'UP'</code></pre>
+                                <pre class="mb-0"><code>schmokin $URL --res-body --eq 'UP' -- -X POST -d 'UP'</code></pre>
                             </div>
                         </div>
                     </div>
