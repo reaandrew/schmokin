@@ -1,6 +1,9 @@
 #! /bin/sh
 # file: examples/equality_test.sh
 
+# This is an example of extracting the request body
+# curl -o output -s --trace-ascii - -X POST -d @/tmp/data.json http://localhost:40000/echo/json | awk '/Send data/{flag=1;next}/== Info: /{flag=0}flag' | cut -c 7- | paste -sd '' | tr -s ' '
+
 python schmokin_test_server.py > test-output.log 2>&1  &
 pid=$!  
 sleep 2

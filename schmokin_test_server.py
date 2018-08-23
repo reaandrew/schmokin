@@ -47,9 +47,14 @@ def array():
     response.headers.set('Content-Type', 'application/json')
     return response
 
+@app.route('/echo/json', methods=['POST'])
+def echo_json():
+    data = request.get_data()
+    return json.dumps(json.loads(data), indent=4, sort_keys=True)
+
 @app.route('/echo', methods=['POST'])
 def echo():
     data = request.get_data()
-    return data
+    return json.loads(data)
 
 app.run(port=40000)
