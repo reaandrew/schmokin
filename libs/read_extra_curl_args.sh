@@ -22,6 +22,7 @@ done
 
 CURL_ARGS+=("-v")
 CURL_ARGS+=("-s")
+CURL_ARGS+=("-w @$(realpath ~/.schmokin/schmokin.format)")
 CURL_ARGS+=("-o /tmp/schmokin-response")
 CURL_ARGS+=("> /tmp/schmokin-output")
 CURL_ARGS+=("2>&1")

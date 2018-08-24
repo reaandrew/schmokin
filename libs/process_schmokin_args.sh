@@ -97,6 +97,14 @@ while [ -n "$1" ]; do
     --debug)
         echo "$DATA"
         ;;
+    --*)
+        value=$(grep "${1/--/}" /tmp/schmokin-output | cut -d: -f2 | tr -d ' ')
+        if ! [ -z "$value" ]; then
+           RESULT="$value"
+           msg="${1/--/}"
+        fi 
+        shift
+        ;;
     * )
         ;;
     esac

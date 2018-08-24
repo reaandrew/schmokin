@@ -153,6 +153,11 @@ testDateComparison(){
     assertEquals 2 $((durationNow-durationThen))
 }
 
+testAssertingOnStatusCodeFromTrace() {
+    ./schmokin $ENDPOINT/simple --http_code --eq 200
+    assertEquals 0 $?
+}
+
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2
 
