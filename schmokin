@@ -8,6 +8,7 @@ if [[ ! -z "${SCHMOKIN_TEST}" ]]; then
 fi
 
 mkdir -p $targetDirectory
+export targetDirectory
 
 RED='\033[0;31m'
 NC='\033[0m' # No Color

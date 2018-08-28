@@ -20,11 +20,9 @@ do
     esac
 done
 
-HOMEPATH="$(cd ~/.schmokin && pwd)"
-
 CURL_ARGS+=("-v")
 CURL_ARGS+=("-s")
-CURL_ARGS+=("-w @$HOMEPATH/schmokin.format")
+CURL_ARGS+=("-w @$targetDirectory/schmokin.format")
 CURL_ARGS+=("-o /tmp/schmokin-response")
 CURL_ARGS+=("> /tmp/schmokin-output")
 CURL_ARGS+=("2>&1")
