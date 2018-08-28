@@ -68,10 +68,19 @@ Extractors
 ----------
 
 --jq	JQ expression
+
+.. literalinclude:: code-snippets/extractors/jq.sh
+   :language: shell
+
 --req-header	HTTP Request Header
 --resp-header	HTTP Response Header
 --resp-body	HTTP Response Body
 --status	HTTP Status
+
+Metrics
+-------
+
+All the metrics available in curl using the `-w` argument.  All can be used with the assertions and also the `export` 
 
 Reporters
 ---------
