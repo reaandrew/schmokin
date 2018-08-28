@@ -58,11 +58,35 @@ Assertions
 ----------
 
 --eq	equals
+
+.. literalinclude:: code-snippets/assertions/eq.sh
+   :language: shell
+
 --gt	greater than
+
+.. literalinclude:: code-snippets/assertions/gt.sh
+   :language: shell
+
 --ge	greater than or equals
+
+.. literalinclude:: code-snippets/assertions/ge.sh
+   :language: shell
+
 --lt	less than
+
+.. literalinclude:: code-snippets/assertions/lt.sh
+   :language: shell
+
 --le	less than or equals
+
+.. literalinclude:: code-snippets/assertions/le.sh
+   :language: shell
+
 --co	contains
+
+.. literalinclude:: code-snippets/assertions/co.sh
+   :language: shell
+
 
 Extractors
 ----------
