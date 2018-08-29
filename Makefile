@@ -6,6 +6,7 @@ test: shunit2-2.1.7/ shellcheck-v0.5.0/
 
 .PHONY: test_osx
 test_osx: shunit2-2.1.7/ shell_check_osx
+	brew install jq
 	pip install -q --user -r requirements.txt
 	shellcheck schmokin 
 	SCHMOKIN_TEST=1 ./schmokin_test
