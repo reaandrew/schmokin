@@ -1,1 +1,1 @@
-schmokin $URL --jq '. | length' --ge 6
+schmokin $URL --jq '. | length' --gt 6

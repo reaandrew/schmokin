@@ -87,6 +87,11 @@ Assertions
 .. literalinclude:: code-snippets/assertions/co.sh
    :language: shell
 
+Chaining Assertions
+~~~~~~~~~~~~~~~~~~~
+
+Assertions can also be chained to together.
+
 
 Extractors
 ----------
