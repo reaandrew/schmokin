@@ -15,7 +15,6 @@ NC='\033[0m' # No Color
 GREEN='\033[0;32m'
 BOLD='\e[1m'
 NOTICE='\e[30;48;5;82m'
-CURL_HTTP_SED="s/^> ([A-Z]{3,6}) (.*) HTTP\\/1.1/\\1,\\2/p"
 FAILED=0
 VERSION="0.1.0" #Build argument
 CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
@@ -61,9 +60,9 @@ if ! eval curl "${CURL_ARGS[@]}" "$URL"; then
 fi
 
 DATA=$(cat /tmp/schmokin-output)
-
-HTTP_METHOD=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED"  | cut -d, -f1)
-HTTP_PATH=$(echo "$DATA" | sed -rn "$CURL_HTTP_SED" | cut -d, -f2)
+PATTERN="^> ([A-Z]{3,6}) (.*) HTTP/[0-9.]+"
+HTTP_METHOD=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
+HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
 # shellcheck disable=SC1073,SC1090
