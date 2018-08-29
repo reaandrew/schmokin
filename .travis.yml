@@ -2,6 +2,9 @@ language: bash
 sudo: false
 env:
   - TEST=1
+os:
+  - linux
+  - osx
 branches:
   only:
   - master
