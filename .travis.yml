@@ -13,7 +13,7 @@ branches:
   - develop
   - feature/.*
 script:
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make test_osx; fi;
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then make test_osx; fi;
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make test; fi;
 after_success:
   - APP_VERSION="$(cat VERSION)"
