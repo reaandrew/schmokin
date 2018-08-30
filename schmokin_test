@@ -158,6 +158,32 @@ testAssertingOnStatusCodeFromTrace() {
     assertEquals 0 $?
 }
 
+testSubstitutingVariableInJSONPayloadFromFile(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    filename=$(mktemp)
+
+    cat <<EOF > "$filename"
+"\$appStatus"
+EOF
+
+    # Post the appStatus value and assert on the value
+    ./schmokin $ENDPOINT/echo --res-body  --eq '"UP"' -- -X POST -d @"$filename"
+
+    assertEquals 0 $?
+}
+
+testSubstitutingVariableInJSONPayloadFromInline(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    # Post the appStatus value and assert on the value
+    ./schmokin $ENDPOINT/echo --res-body --eq 'UP' -- -X POST -d '$appStatus'
+
+    assertEquals 0 $?
+}
+
 # Load shUnit2.
 . ./shunit2-2.1.7/shunit2
 
