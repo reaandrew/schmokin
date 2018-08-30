@@ -1,7 +1,10 @@
 # Loop over the variables to get any args after the --
 whitespace="[[:space:]]"
-for arg in "$@";
+args=$#                          # number of command line args
+for (( i=1; i<=args; i+=1 ))    # loop from 1 to N (where N is number of args)
 do
+    arg="${!i}"
+
     case "$arg" in
         "--")
             EXTRA_PARAMS=1
@@ -13,6 +16,24 @@ do
                 then
                     CURL_ARGS+=(\""$arg"\")
                 else
+                    if [ "$i" -ge 1 ]
+                    then
+                        previous="${*:$((i-1)):1}"
+                        if [ "$previous" == "-d" ] && echo $arg | grep -q "@";
+                        then
+                            filename="$(echo $arg | cut -c2-)"
+                            newFilename="$(mktemp)"
+
+                            cat $filename
+
+                            cp "$filename" "$newFilename"
+
+                            envsubst < "$filename" > "$newFilename"
+                            CURL_ARGS+=("@$newFilename")
+                            continue
+                        fi
+                    fi
+
                     CURL_ARGS+=("$arg")
                 fi
             fi
