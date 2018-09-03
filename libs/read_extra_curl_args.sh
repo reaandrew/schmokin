@@ -24,8 +24,6 @@ do
                             filename="$(echo $arg | cut -c2-)"
                             newFilename="$(mktemp)"
 
-                            cat $filename
-
                             cp "$filename" "$newFilename"
 
                             envsubst < "$filename" > "$newFilename"

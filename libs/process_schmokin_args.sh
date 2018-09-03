@@ -2,7 +2,7 @@ while [ -n "$1" ]; do
     case "$1" in
     --status)
        msg=$(printf "HTTP Status")
-       RESULT=$(echo "$DATA" | grep -Eo "HTTP/[0-9.]+ [0-9]{3}" | cut -d' ' -f2)
+       RESULT=$(echo "$DATA" | grep -Eo "HTTP/[0-9.]+ [0-9]{3}"  | grep -v 100 | cut -d' ' -f2)
        ;;
     --jq)
         msg=$2
