@@ -105,3 +105,9 @@ schmokin $URL --res-header "Server" --contains 'Python'
 ```
 ./schmokin $ENDPOINT/array --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
 ```
+
+
+
+https://github.com/mh-cbon/go-msi
+https://medium.com/@mattholt/packaging-a-go-application-for-macos-f7084b00f6b5
+
