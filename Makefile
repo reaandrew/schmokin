@@ -21,3 +21,12 @@ shellcheck-v0.5.0/:
 .PHONY: shell_check_osx
 shell_check_osx:
 	brew install shellcheck
+
+dist/linux/curl:
+	mkdir -p dist/linux
+	curl -Lo /tmp/curl-7.30.0.ermine.tar.bz2 http://www.magicermine.com/demos/curl/curl/curl-7.30.0.ermine.tar.bz2
+	tar -jxf /tmp/curl-7.30.0.ermine.tar.bz2 -C /tmp
+	mv /tmp/curl-7.30.0.ermine/curl.ermine dist/linux/curl
+
+.PHONY: compile_linux
+compile_linux: dist/linux/curl

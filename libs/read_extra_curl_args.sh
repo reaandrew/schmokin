@@ -47,3 +47,5 @@ CURL_ARGS+=("-w @$targetDirectory/schmokin.format")
 CURL_ARGS+=("-o /tmp/schmokin-response")
 CURL_ARGS+=("> /tmp/schmokin-output")
 CURL_ARGS+=("2>&1")
+
+
