@@ -10,6 +10,7 @@ func Test_Status_Equals(t *testing.T) {
 	var httpClient = CreateCurlHttpClient()
 	var app = CreateSchmokinApp(httpClient)
 	var args = []string{
+		"http://localhost:40000/pretty",
 		"--status",
 		"--eq",
 		"200",
