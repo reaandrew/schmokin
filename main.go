@@ -33,13 +33,16 @@ type CurlHttpClient struct {
 }
 
 func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
-	cmd := "curl"
+	process := "curl"
 
 	executeArgs := append(args, instance.args...)
 
 	var output []byte
 	var err error
-	if output, err = exec.Command(cmd, executeArgs...).CombinedOutput(); err != nil {
+
+	if output, err = exec.Command(process, executeArgs...).Output(); err != nil {
+		exitError := err.(*exec.ExitError)
+		fmt.Println(string(exitError.Stderr))
 		os.Exit(1)
 	}
 
@@ -95,7 +98,15 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			var expected = args[current+1]
 			success = success && (expected == instance.target)
 			current += 1
+		case "--ne":
+			if len(args) < current+2 {
+				fmt.Errorf("Must supply value to compare against --ne")
+			}
+			var expected = args[current+1]
+			success = success && (expected != instance.target)
+			current += 1
 		}
+
 		current += 1
 	}
 
