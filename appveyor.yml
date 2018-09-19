@@ -18,5 +18,6 @@ install:
   - git config --global user.name "Appveyor"
 
 build_script:
+  - pip install --user -r requirements.txt
   - start /b python schmokin_test_server.py
   - go test -v ./...
