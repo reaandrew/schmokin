@@ -11,8 +11,6 @@ environment:
   GOPATH: c:\gopath
 
 install:
-
-install:
   - set PATH=%GOPATH%\bin;c:\go\bin;"C:\Program Files\Git\mingw64\bin";%PATH%
   - go version
   - go get -v -t ./...
