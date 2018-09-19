@@ -16,6 +16,7 @@ install: true
 
 before_script:
   - pip install --user -r requirements.txt
+  - go get -t
   - python schmokin_test_server.py &
 
 # script always runs to completion (set +e). If we have linter issues AND a
