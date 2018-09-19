@@ -11,13 +11,19 @@ environment:
   GOPATH: c:\gopath
 
 install:
+
+install:
   - set PATH=%GOPATH%\bin;c:\go\bin;"C:\Program Files\Git\mingw64\bin";%PATH%
   - go version
   - go get -v -t ./...
   - git config --global user.email "appveyor@does.not.exist"
   - git config --global user.name "Appveyor"
+  - pip install --user -r requirements.txt
+  - ps: $MyProcess = Start-Process python schmokin_test_server.py -PassThru
 
 build_script:
-  - pip install --user -r requirements.txt
-  - start /b python schmokin_test_server.py
   - go test -v ./...
+
+on_finish:
+  - ps: Stop-Process -Id $MyProcess.Id
+
