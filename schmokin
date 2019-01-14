@@ -62,7 +62,7 @@ fi
 DATA=$(cat /tmp/schmokin-output)
 PATTERN="^> ([A-Z]{3,6}) (.*) HTTP/[0-9.]+"
 HTTP_METHOD=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
-HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
+HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f3)
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
 # shellcheck disable=SC1073,SC1090
