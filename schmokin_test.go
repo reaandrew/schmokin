@@ -19,6 +19,7 @@ func Test_Schmokin(t *testing.T) {
 		s.Shutdown(ctx)
 	}()
 	m.HandleFunc("/pretty", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("X-FU", "BAR")
 		w.Write([]byte("OK"))
 	})
 	go func() {
@@ -146,6 +147,21 @@ func Test_Schmokin(t *testing.T) {
 			"http://localhost:40000/pretty",
 			"--co",
 			"OK",
+		}
+
+		var result = app.schmoke(args)
+		assert.True(t, result.success)
+	})
+
+	t.Run("--resp-header", func(t *testing.T) {
+		var httpClient = CreateCurlHttpClient()
+		var app = CreateSchmokinApp(httpClient)
+		var args = []string{
+			"http://localhost:40000/pretty",
+			"--resp-header",
+			"X-FU",
+			"--eq",
+			"BAR",
 		}
 
 		var result = app.schmoke(args)

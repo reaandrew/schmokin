@@ -43,7 +43,7 @@ func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
 	var output []byte
 	var err error
 
-	if output, err = exec.Command(process, executeArgs...).Output(); err != nil {
+	if output, err = exec.Command(process, executeArgs...).CombinedOutput(); err != nil {
 		exitError := err.(*exec.ExitError)
 		fmt.Println(string(exitError.Stderr))
 		os.Exit(1)
@@ -196,6 +196,7 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			success = success && (actual <= expected)
 			current += 1
 		case "--co":
+			//TODO: Use --co with other parameters
 			if len(args) < current+2 {
 				err := fmt.Errorf("Must supply value to compare against --co")
 				fmt.Fprintf(os.Stderr, "error: %v\n", err)
@@ -203,6 +204,20 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			}
 			var expected = args[current+1]
 			success = success && strings.Contains(result.payload, expected)
+			current += 1
+		case "--resp-header":
+			if len(args) < current+2 {
+				err := fmt.Errorf("Must supply value to compare against --req-header")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			regex := fmt.Sprintf(`(?i)<\s%s:\s([^\n\r]+)`, args[current+1])
+			reg, _ := regexp.Compile(regex)
+			result_slice := reg.FindAllStringSubmatch(result.response, -1)
+
+			if len(result_slice) == 1 && len(result_slice[0]) == 2 {
+				instance.target = result_slice[0][1]
+			}
 			current += 1
 		default:
 			if current > 0 {
