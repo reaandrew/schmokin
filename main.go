@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 var SchmokinFormat = `content_type: %{content_type}\n filename_effective: %{filename_effective}\n ftp_entry_path: %{ftp_entry_path}\n http_code: %{http_code}\n http_connect: %{http_connect}\n local_ip: %{local_ip}\n local_port: %{local_port}\n num_connects: %{num_connects}\n num_redirects: %{num_redirects}\n redirect_url: %{redirect_url}\n remote_ip: %{remote_ip}\n remote_port: %{remote_port}\n size_download: %{size_download}\n size_header: %{size_header}\n size_request: %{size_request}\n size_upload: %{size_upload}\n speed_download: %{speed_download}\n speed_upload: %{speed_upload}\n ssl_verify_result: %{ssl_verify_result}\n time_appconnect: %{time_appconnect}\n time_connect: %{time_connect}\n time_namelookup: %{time_namelookup}\n time_pretransfer: %{time_pretransfer}\n time_redirect: %{time_redirect}\n time_starttransfer: %{time_starttransfer}\n time_total: %{time_total}\n url_effective: %{url_effective}\n`
@@ -46,8 +49,10 @@ func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
 		os.Exit(1)
 	}
 
+	payloadData, _ := ioutil.ReadFile("schmokin-response")
+
 	return SchmokinResponse{
-		payload:  "",
+		payload:  string(payloadData),
 		response: string(output),
 	}
 }
@@ -57,7 +62,8 @@ func CreateCurlHttpClient() CurlHttpClient {
 		"-v",
 		"-s",
 		fmt.Sprintf("-w '%s'", SchmokinFormat),
-		"-oschmokin-response",
+		"-o",
+		"schmokin-response",
 	}
 	return CurlHttpClient{
 		args: baseArgs,
@@ -93,18 +99,115 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			}
 		case "--eq":
 			if len(args) < current+2 {
-				fmt.Errorf("Must supply value to compare against --eq")
+				err := fmt.Errorf("Must supply value to compare against --eq")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
 			}
 			var expected = args[current+1]
 			success = success && (expected == instance.target)
 			current += 1
 		case "--ne":
 			if len(args) < current+2 {
-				fmt.Errorf("Must supply value to compare against --ne")
+				err := fmt.Errorf("Must supply value to compare against --ne")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
 			}
 			var expected = args[current+1]
 			success = success && (expected != instance.target)
 			current += 1
+		case "--gt":
+			if len(args) < current+2 {
+				err := fmt.Errorf("Must supply value to compare against --gt")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			expected, err := strconv.Atoi(args[current+1])
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the expected")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			actual, err := strconv.Atoi(instance.target)
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the actual")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			success = success && (actual > expected)
+			current += 1
+		case "--gte":
+			if len(args) < current+2 {
+				err := fmt.Errorf("Must supply value to compare against --gte")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			expected, err := strconv.Atoi(args[current+1])
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the expected")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			actual, err := strconv.Atoi(instance.target)
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the actual")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			success = success && (actual >= expected)
+			current += 1
+		case "--lt":
+			if len(args) < current+2 {
+				err := fmt.Errorf("Must supply value to compare against --lt")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			expected, err := strconv.Atoi(args[current+1])
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the expected")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			actual, err := strconv.Atoi(instance.target)
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the actual")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			success = success && (actual < expected)
+			current += 1
+		case "--lte":
+			if len(args) < current+2 {
+				err := fmt.Errorf("Must supply value to compare against --lte")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			expected, err := strconv.Atoi(args[current+1])
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the expected")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			actual, err := strconv.Atoi(instance.target)
+			if err != nil {
+				err = fmt.Errorf("Argument must be a integer for the actual")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			success = success && (actual <= expected)
+			current += 1
+		case "--co":
+			if len(args) < current+2 {
+				err := fmt.Errorf("Must supply value to compare against --co")
+				fmt.Fprintf(os.Stderr, "error: %v\n", err)
+				os.Exit(1)
+			}
+			var expected = args[current+1]
+			success = success && strings.Contains(result.payload, expected)
+			current += 1
+		default:
+			if current > 0 {
+				panic(fmt.Sprintf("Unknown Arg: %v", args[current]))
+			}
 		}
 
 		current += 1
