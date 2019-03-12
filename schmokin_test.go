@@ -170,7 +170,7 @@ func Test_Schmokin(t *testing.T) {
 		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
-			"--resp-header",
+			"--res-header",
 			"X-FU",
 			"--eq",
 			"BAR",
@@ -185,7 +185,8 @@ func Test_Schmokin(t *testing.T) {
 		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
-			"--co",
+			"--res-body",
+			"--eq",
 			"Method: POST Body: UP",
 			"--",
 			"-X",

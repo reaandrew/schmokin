@@ -225,7 +225,7 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			var expected = args[current+1]
 			success = success && strings.Contains(result.payload, expected)
 			current += 1
-		case "--resp-header":
+		case "--res-header":
 			if len(args) < current+2 {
 				err := fmt.Errorf("Must supply value to compare against --req-header")
 				fmt.Fprintf(os.Stderr, "error: %v\n", err)
@@ -239,6 +239,8 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 				instance.target = result_slice[0][1]
 			}
 			current += 1
+		case "--res-body":
+			instance.target = result.payload
 		default:
 			if current > 0 {
 				panic(fmt.Sprintf("Unknown Arg: %v", args[current]))
