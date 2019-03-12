@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"testing"
@@ -20,7 +22,17 @@ func Test_Schmokin(t *testing.T) {
 	}()
 	m.HandleFunc("/pretty", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-FU", "BAR")
-		w.Write([]byte("OK"))
+		if r.Method == http.MethodGet {
+			w.Write([]byte("OK"))
+		} else {
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				body = []byte("not set")
+			}
+			message := fmt.Sprintf("Method: %v Body: %v", r.Method, string(body))
+			w.Write([]byte(message))
+			fmt.Println("message", message)
+		}
 	})
 	go func() {
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -162,6 +174,24 @@ func Test_Schmokin(t *testing.T) {
 			"X-FU",
 			"--eq",
 			"BAR",
+		}
+
+		var result = app.schmoke(args)
+		assert.True(t, result.success)
+	})
+
+	t.Run("-- -X POST -d 'UP'", func(t *testing.T) {
+		var httpClient = CreateCurlHttpClient()
+		var app = CreateSchmokinApp(httpClient)
+		var args = []string{
+			"http://localhost:40000/pretty",
+			"--co",
+			"Method: POST Body: UP",
+			"--",
+			"-X",
+			"POST",
+			"-d",
+			"UP",
 		}
 
 		var result = app.schmoke(args)

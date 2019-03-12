@@ -75,9 +75,29 @@ type SchmokinApp struct {
 	target     string
 }
 
+func SliceIndex(slice []string, predicate func(i string) bool) int {
+	for i := 0; i < len(slice); i++ {
+		if predicate(slice[i]) {
+			return i
+		}
+	}
+	return -1
+}
+
 func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 
-	result := instance.httpClient.execute([]string{args[0]})
+	argsToProxy := []string{args[0]}
+	extraIndex := SliceIndex(args, func(i string) bool {
+		return i == "--"
+	})
+	if extraIndex > -1 {
+		argsToProxy = append(argsToProxy, args[extraIndex+1:]...)
+		args = args[:extraIndex]
+		fmt.Println("args", args)
+		fmt.Println("args to proxy", argsToProxy)
+	}
+
+	result := instance.httpClient.execute(argsToProxy)
 
 	success := true
 	current := 0
