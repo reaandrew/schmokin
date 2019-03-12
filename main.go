@@ -36,6 +36,7 @@ type CurlHttpClient struct {
 }
 
 func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
+	fmt.Println("Executing curl")
 	process := "curl"
 
 	executeArgs := append(args, instance.args...)
@@ -44,12 +45,15 @@ func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
 	var err error
 
 	if output, err = exec.Command(process, executeArgs...).CombinedOutput(); err != nil {
+		fmt.Println("ERROR", err)
 		exitError := err.(*exec.ExitError)
 		fmt.Println(string(exitError.Stderr))
 		os.Exit(1)
 	}
 
 	payloadData, _ := ioutil.ReadFile("schmokin-response")
+
+	fmt.Println(payloadData)
 
 	return SchmokinResponse{
 		payload:  string(payloadData),
@@ -72,6 +76,7 @@ func CreateCurlHttpClient() CurlHttpClient {
 
 type SchmokinApp struct {
 	httpClient SchmokinHttpClient
+	targetKey  string
 	target     string
 }
 
@@ -105,6 +110,7 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 	for current < len(args) {
 		switch args[current] {
 		case "--status":
+			instance.targetKey = "status"
 			reg, _ := regexp.Compile(`http_code:\s([\d]+)`)
 			result_slice := reg.FindAllStringSubmatch(result.response, -1)
 			if len(result_slice) == 1 && len(result_slice[0]) == 2 {
@@ -262,5 +268,10 @@ func CreateSchmokinApp(httpClient SchmokinHttpClient) SchmokinApp {
 }
 
 func main() {
+	fmt.Println("HERE")
+	var httpClient = CreateCurlHttpClient()
+	var app = CreateSchmokinApp(httpClient)
+	var result = app.schmoke(os.Args[1:])
 
+	fmt.Println("result", result, os.Args)
 }

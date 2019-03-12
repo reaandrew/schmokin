@@ -12,7 +12,6 @@ import (
 )
 
 func Test_Schmokin(t *testing.T) {
-
 	m := http.NewServeMux()
 	s := http.Server{Addr: ":40000", Handler: m}
 	ctx, cancel := context.WithCancel(context.Background())
