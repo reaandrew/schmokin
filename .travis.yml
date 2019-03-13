@@ -15,15 +15,10 @@ git:
 install: true
 
 before_script:
-  - pip install --user -r requirements.txt
   - go get -t
-  - python schmokin_test_server.py &
 
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
 # .golangci.yml file at the top level of your repo.
 script:
   - go test -v -race ./...  # Run all the tests with the race detector enabled
-
-after_script:
-  - pkill python
