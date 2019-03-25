@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"regexp"
 	"strconv"
@@ -169,7 +173,14 @@ func (instance *SchmokinApp) extractors(args []string, result SchmokinResponse) 
 
 func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 
-	argsToProxy := []string{args[0]}
+	//Need an argument for the url
+
+	argsToProxy := []string{}
+	results := ResultCollection{}
+	success := true
+	instance.current = 0
+	var result SchmokinResponse
+
 	extraIndex := SliceIndex(args, func(i string) bool {
 		return i == "--"
 	})
@@ -177,16 +188,24 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 		argsToProxy = append(argsToProxy, args[extraIndex+1:]...)
 		args = args[:extraIndex]
 	}
-
-	result := instance.httpClient.execute(argsToProxy)
-
-	results := ResultCollection{}
-
-	success := true
-	instance.current = 0
+	if !strings.HasPrefix(args[0], "-") {
+		argsToProxy = append([]string{args[0]}, argsToProxy...)
+		result = instance.httpClient.execute(argsToProxy)
+	}
 
 	for instance.current < len(args) {
 		switch args[instance.current] {
+		case "-f":
+			file, err := os.Open(args[instance.current+1])
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer file.Close()
+			ReadLines(file, func(line string) {
+				fmt.Println(line, strings.Fields(line))
+				result := instance.schmoke(strings.Fields(line))
+				PrintResult(result)
+			})
 		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
 			instance.checkArgs(args, instance.current, args[instance.current])
 			result := instance.assertions(args[instance.current], args[instance.current+1])
@@ -230,11 +249,39 @@ func CreateSchmokinApp(httpClient SchmokinHttpClient) *SchmokinApp {
 	}
 }
 
-func main() {
-	var httpClient = CreateCurlHttpClient()
-	var app = CreateSchmokinApp(httpClient)
-	var result = app.schmoke(os.Args[1:])
+func ReadLines(file *os.File, visitor func(line string)) {
+	reader := bufio.NewReader(file)
+	for {
+		var buffer bytes.Buffer
 
+		var l []byte
+		var err error
+		var isPrefix bool
+		for {
+			l, isPrefix, err = reader.ReadLine()
+			buffer.Write(l)
+
+			// If we've reached the end of the line, stop reading.
+			if !isPrefix {
+				break
+			}
+
+			// If we're just at the EOF, break
+			if err != nil {
+				break
+			}
+		}
+
+		if err == io.EOF {
+			break
+		}
+
+		line := buffer.String()
+		visitor(line)
+	}
+}
+
+func PrintResult(result SchmokinResult) {
 	fmt.Println(fmt.Sprintf("%s %s", result.Method, result.Url))
 	fmt.Println()
 	for _, resultItem := range result.Results {
@@ -245,6 +292,13 @@ func main() {
 		fmt.Println(fmt.Sprintf("Result: %s", GreenText("SUCCESS")))
 	} else {
 		fmt.Println(fmt.Sprintf("Result: %s", RedText("FAILURE")))
-		os.Exit(1)
 	}
+}
+
+func main() {
+	var httpClient = CreateCurlHttpClient()
+	var app = CreateSchmokinApp(httpClient)
+	fmt.Println(os.Args[1:])
+	var result = app.schmoke(os.Args[1:])
+	PrintResult(result)
 }
