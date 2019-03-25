@@ -17,6 +17,11 @@ const (
 	ActualNotInteger   string = "Argument must be a integer for the actual"
 )
 
+var (
+	green = color.New(color.FgGreen).SprintFunc()
+	red   = color.New(color.FgRed).SprintFunc()
+)
+
 var SchmokinFormat = `content_type: %{content_type}\n filename_effective: %{filename_effective}\n ftp_entry_path: %{ftp_entry_path}\n http_code: %{http_code}\n http_connect: %{http_connect}\n local_ip: %{local_ip}\n local_port: %{local_port}\n num_connects: %{num_connects}\n num_redirects: %{num_redirects}\n redirect_url: %{redirect_url}\n remote_ip: %{remote_ip}\n remote_port: %{remote_port}\n size_download: %{size_download}\n size_header: %{size_header}\n size_request: %{size_request}\n size_upload: %{size_upload}\n speed_download: %{speed_download}\n speed_upload: %{speed_upload}\n ssl_verify_result: %{ssl_verify_result}\n time_appconnect: %{time_appconnect}\n time_connect: %{time_connect}\n time_namelookup: %{time_namelookup}\n time_pretransfer: %{time_pretransfer}\n time_redirect: %{time_redirect}\n time_starttransfer: %{time_starttransfer}\n time_total: %{time_total}\n url_effective: %{url_effective}\n`
 
 func run() {
@@ -99,11 +104,9 @@ func (instance Result) String() string {
 
 	if instance.Success {
 		statement := fmt.Sprintf("Expect %s", instance.Statement)
-		green := color.New(color.FgGreen).SprintFunc()
 		return fmt.Sprintf("%s : %s", green("PASS"), statement)
 	} else {
 		statement := fmt.Sprintf("Expected %s actual %s", instance.Statement, instance.Actual)
-		red := color.New(color.FgRed).SprintFunc()
 		return fmt.Sprintf("%s : %s", red("FAIL"), statement)
 	}
 }
@@ -309,8 +312,14 @@ func main() {
 	var result = app.schmoke(os.Args[1:])
 
 	fmt.Println(fmt.Sprintf("%s %s", result.Method, result.Url))
+	fmt.Println()
 	for _, resultItem := range result.Results {
 		fmt.Println(resultItem)
 	}
-	fmt.Println("result", result.Results.Success(), os.Args)
+	fmt.Println()
+	if result.Results.Success() {
+		fmt.Println(fmt.Sprintf("Result: %s", green("SUCCESS")))
+	} else {
+		fmt.Println(fmt.Sprintf("Result: %s", red("FAILURE")))
+	}
 }
