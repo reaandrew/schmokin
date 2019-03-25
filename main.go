@@ -89,6 +89,14 @@ func SliceIndex(slice []string, predicate func(i string) bool) int {
 	return -1
 }
 
+func (instance SchmokinApp) checkArgs(args []string, current int, message string) {
+	if len(args) < current+2 {
+		err := fmt.Errorf(message)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
 func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 
 	argsToProxy := []string{args[0]}
@@ -124,29 +132,17 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 				instance.target = result_slice[0][1]
 			}
 		case "--eq":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --eq")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --eq")
 			var expected = args[current+1]
 			success = success && (expected == instance.target)
 			current += 1
 		case "--ne":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --ne")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --ne")
 			var expected = args[current+1]
 			success = success && (expected != instance.target)
 			current += 1
 		case "--gt":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --gt")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --gt")
 			expected, err := strconv.Atoi(args[current+1])
 			if err != nil {
 				err = fmt.Errorf("Argument must be a integer for the expected")
@@ -162,11 +158,7 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			success = success && (actual > expected)
 			current += 1
 		case "--gte":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --gte")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --gte")
 			expected, err := strconv.Atoi(args[current+1])
 			if err != nil {
 				err = fmt.Errorf("Argument must be a integer for the expected")
@@ -182,11 +174,7 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			success = success && (actual >= expected)
 			current += 1
 		case "--lt":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --lt")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --lt")
 			expected, err := strconv.Atoi(args[current+1])
 			if err != nil {
 				err = fmt.Errorf("Argument must be a integer for the expected")
@@ -202,11 +190,7 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			success = success && (actual < expected)
 			current += 1
 		case "--lte":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --lte")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --lte")
 			expected, err := strconv.Atoi(args[current+1])
 			if err != nil {
 				err = fmt.Errorf("Argument must be a integer for the expected")
@@ -223,20 +207,12 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			current += 1
 		case "--co":
 			//TODO: Use --co with other parameters
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --co")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --co")
 			var expected = args[current+1]
 			success = success && strings.Contains(result.payload, expected)
 			current += 1
 		case "--res-header":
-			if len(args) < current+2 {
-				err := fmt.Errorf("Must supply value to compare against --req-header")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			instance.checkArgs(args, current, "Must supply value to compare against --req-header")
 			regex := fmt.Sprintf(`(?i)<\s%s:\s([^\n\r]+)`, args[current+1])
 			reg, _ := regexp.Compile(regex)
 			result_slice := reg.FindAllStringSubmatch(result.response, -1)
