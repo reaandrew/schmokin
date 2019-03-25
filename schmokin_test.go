@@ -196,4 +196,8 @@ func Test_Schmokin(t *testing.T) {
 		var result = app.schmoke(args)
 		assert.True(t, result.success)
 	})
+
+	t.Run("--export", func(t *testing.T) {
+
+	})
 }
