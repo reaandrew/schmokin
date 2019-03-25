@@ -30,7 +30,6 @@ func Test_Schmokin(t *testing.T) {
 			}
 			message := fmt.Sprintf("Method: %v Body: %v", r.Method, string(body))
 			w.Write([]byte(message))
-			fmt.Println("message", message)
 		}
 	})
 	go func() {

@@ -111,17 +111,6 @@ func (instance Result) String() string {
 	}
 }
 
-type ResultCollection []Result
-
-func (instance ResultCollection) Success() bool {
-	for _, result := range instance {
-		if !result.Success {
-			return false
-		}
-	}
-	return true
-}
-
 type SchmokinApp struct {
 	httpClient SchmokinHttpClient
 	targetKey  string
@@ -139,10 +128,55 @@ func SliceIndex(slice []string, predicate func(i string) bool) int {
 
 func (instance SchmokinApp) checkArgs(args []string, current int, message string) {
 	if len(args) < current+2 {
-		err := fmt.Errorf(fmt.Sprintf("Must supply value to compare against %s", message))
+		err := fmt.Errorf(fmt.Sprintf("Must supply value to compare against for %s", message))
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func (instance SchmokinApp) assertEquality(arg string, expected string) Result {
+
+	result := Result{
+		Actual: instance.target,
+	}
+
+	switch arg {
+	case "--eq":
+		result.Statement = fmt.Sprintf("%s to equal %s", instance.targetKey, expected)
+		result.Success = expected == instance.target
+	case "--ne":
+		result.Statement = fmt.Sprintf("%s to equal %s", instance.targetKey, expected)
+		result.Success = expected != instance.target
+	}
+
+	return result
+}
+
+func (instance SchmokinApp) assertNumeric(arg string, expected string) Result {
+
+	expectedValue, err := strconv.Atoi(expected)
+	checkErr(err, ExpectedNotInteger)
+	actual, err := strconv.Atoi(instance.target)
+	checkErr(err, ActualNotInteger)
+	result := Result{
+		Actual: actual,
+	}
+	switch arg {
+	case "--gt":
+		result.Statement = fmt.Sprintf("%s is greater than %v", instance.targetKey, expected)
+		result.Success = actual > expectedValue
+	case "--gte":
+		result.Statement = fmt.Sprintf("%s is greater than or equal %v", instance.targetKey, expected)
+		result.Success = actual >= expectedValue
+	case "--lt":
+		result.Statement = fmt.Sprintf("%s is less than %v", instance.targetKey, expected)
+		result.Success = actual < expectedValue
+	case "--lte":
+		result.Statement = fmt.Sprintf("%s is less than or equal %v", instance.targetKey, expected)
+		result.Success = actual <= expectedValue
+	}
+
+	return result
 }
 
 func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
@@ -178,72 +212,15 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 			if len(result_slice) == 1 && len(result_slice[0]) == 2 {
 				instance.target = result_slice[0][1]
 			}
-		case "--eq":
-			instance.checkArgs(args, current, "--eq")
-			var expected = args[current+1]
-			results = append(results, Result{
-				Actual:    instance.target,
-				Statement: fmt.Sprintf("%s to equal %s", instance.targetKey, expected),
-				Success:   expected == instance.target,
-			})
+		case "--eq", "--ne":
+			instance.checkArgs(args, current, args[current])
+			var result = instance.assertEquality(args[current], args[current+1])
+			results = append(results, result)
 			current += 1
-		case "--ne":
-			instance.checkArgs(args, current, "--ne")
-			var expected = args[current+1]
-			results = append(results, Result{
-				Actual:    instance.target,
-				Statement: fmt.Sprintf("%s to not equal %s", instance.targetKey, expected),
-				Success:   expected != instance.target,
-			})
-			current += 1
-		case "--gt":
-			instance.checkArgs(args, current, "--gt")
-			expected, err := strconv.Atoi(args[current+1])
-			checkErr(err, ExpectedNotInteger)
-			actual, err := strconv.Atoi(instance.target)
-			checkErr(err, ActualNotInteger)
-			success = success && (actual > expected)
-			results = append(results, Result{
-				Actual:    actual,
-				Statement: fmt.Sprintf("%s is greater than %v", instance.targetKey, expected),
-				Success:   actual > expected,
-			})
-			current += 1
-		case "--gte":
-			instance.checkArgs(args, current, "--gte")
-			expected, err := strconv.Atoi(args[current+1])
-			checkErr(err, ExpectedNotInteger)
-			actual, err := strconv.Atoi(instance.target)
-			checkErr(err, ActualNotInteger)
-			results = append(results, Result{
-				Actual:    actual,
-				Statement: fmt.Sprintf("%s is greater than or equal %v", instance.targetKey, expected),
-				Success:   actual >= expected,
-			})
-			current += 1
-		case "--lt":
-			instance.checkArgs(args, current, "--lt")
-			expected, err := strconv.Atoi(args[current+1])
-			checkErr(err, ExpectedNotInteger)
-			actual, err := strconv.Atoi(instance.target)
-			checkErr(err, ActualNotInteger)
-			results = append(results, Result{
-				Actual:    actual,
-				Statement: fmt.Sprintf("%s is less than %v", instance.targetKey, expected),
-				Success:   actual < expected,
-			})
-			current += 1
-		case "--lte":
-			instance.checkArgs(args, current, "--lte")
-			expected, err := strconv.Atoi(args[current+1])
-			checkErr(err, ExpectedNotInteger)
-			actual, err := strconv.Atoi(instance.target)
-			checkErr(err, ActualNotInteger)
-			results = append(results, Result{
-				Actual:    actual,
-				Statement: fmt.Sprintf("%s is less than or equal %v", instance.targetKey, expected),
-				Success:   actual < expected,
-			})
+		case "--gt", "--gte", "--lt", "--lte":
+			instance.checkArgs(args, current, args[current])
+			var result = instance.assertNumeric(args[current], args[current+1])
+			results = append(results, result)
 			current += 1
 		case "--co":
 			//TODO: Use --co with other parameters
