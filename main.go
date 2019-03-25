@@ -10,12 +10,25 @@ import (
 	"strings"
 )
 
+const (
+	ExpectedNotInteger string = "Argument must be a integer for the expected"
+	ActualNotInteger   string = "Argument must be a integer for the actual"
+)
+
 var SchmokinFormat = `content_type: %{content_type}\n filename_effective: %{filename_effective}\n ftp_entry_path: %{ftp_entry_path}\n http_code: %{http_code}\n http_connect: %{http_connect}\n local_ip: %{local_ip}\n local_port: %{local_port}\n num_connects: %{num_connects}\n num_redirects: %{num_redirects}\n redirect_url: %{redirect_url}\n remote_ip: %{remote_ip}\n remote_port: %{remote_port}\n size_download: %{size_download}\n size_header: %{size_header}\n size_request: %{size_request}\n size_upload: %{size_upload}\n speed_download: %{speed_download}\n speed_upload: %{speed_upload}\n ssl_verify_result: %{ssl_verify_result}\n time_appconnect: %{time_appconnect}\n time_connect: %{time_connect}\n time_namelookup: %{time_namelookup}\n time_pretransfer: %{time_pretransfer}\n time_redirect: %{time_redirect}\n time_starttransfer: %{time_starttransfer}\n time_total: %{time_total}\n url_effective: %{url_effective}\n`
 
 func run() {
 	processCmd := exec.Command("curl")
 	//stdout, err := processCmd.StdoutPipe()
 	processCmd.Start()
+}
+
+func checkErr(err error, msg string) {
+	if err != nil {
+		err = fmt.Errorf(msg)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 type SchmokinResponse struct {
@@ -91,7 +104,7 @@ func SliceIndex(slice []string, predicate func(i string) bool) int {
 
 func (instance SchmokinApp) checkArgs(args []string, current int, message string) {
 	if len(args) < current+2 {
-		err := fmt.Errorf(message)
+		err := fmt.Errorf(fmt.Sprintf("Must supply value to compare against %s", message))
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
@@ -132,87 +145,53 @@ func (instance SchmokinApp) schmoke(args []string) SchmokinResult {
 				instance.target = result_slice[0][1]
 			}
 		case "--eq":
-			instance.checkArgs(args, current, "Must supply value to compare against --eq")
+			instance.checkArgs(args, current, "--eq")
 			var expected = args[current+1]
 			success = success && (expected == instance.target)
 			current += 1
 		case "--ne":
-			instance.checkArgs(args, current, "Must supply value to compare against --ne")
-			var expected = args[current+1]
-			success = success && (expected != instance.target)
+			instance.checkArgs(args, current, "--ne")
+			success = success && (args[current+1] != instance.target)
 			current += 1
 		case "--gt":
-			instance.checkArgs(args, current, "Must supply value to compare against --gt")
+			instance.checkArgs(args, current, "--gt")
 			expected, err := strconv.Atoi(args[current+1])
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the expected")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ExpectedNotInteger)
 			actual, err := strconv.Atoi(instance.target)
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the actual")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ActualNotInteger)
 			success = success && (actual > expected)
 			current += 1
 		case "--gte":
-			instance.checkArgs(args, current, "Must supply value to compare against --gte")
+			instance.checkArgs(args, current, "--gte")
 			expected, err := strconv.Atoi(args[current+1])
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the expected")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ExpectedNotInteger)
 			actual, err := strconv.Atoi(instance.target)
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the actual")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ActualNotInteger)
 			success = success && (actual >= expected)
 			current += 1
 		case "--lt":
-			instance.checkArgs(args, current, "Must supply value to compare against --lt")
+			instance.checkArgs(args, current, "--lt")
 			expected, err := strconv.Atoi(args[current+1])
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the expected")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ExpectedNotInteger)
 			actual, err := strconv.Atoi(instance.target)
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the actual")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ActualNotInteger)
 			success = success && (actual < expected)
 			current += 1
 		case "--lte":
-			instance.checkArgs(args, current, "Must supply value to compare against --lte")
+			instance.checkArgs(args, current, "--lte")
 			expected, err := strconv.Atoi(args[current+1])
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the expected")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ExpectedNotInteger)
 			actual, err := strconv.Atoi(instance.target)
-			if err != nil {
-				err = fmt.Errorf("Argument must be a integer for the actual")
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				os.Exit(1)
-			}
+			checkErr(err, ActualNotInteger)
 			success = success && (actual <= expected)
 			current += 1
 		case "--co":
 			//TODO: Use --co with other parameters
-			instance.checkArgs(args, current, "Must supply value to compare against --co")
-			var expected = args[current+1]
-			success = success && strings.Contains(result.payload, expected)
+			instance.checkArgs(args, current, "--co")
+			success = success && strings.Contains(result.payload, args[current+1])
 			current += 1
 		case "--res-header":
-			instance.checkArgs(args, current, "Must supply value to compare against --req-header")
+			instance.checkArgs(args, current, "--req-header")
 			regex := fmt.Sprintf(`(?i)<\s%s:\s([^\n\r]+)`, args[current+1])
 			reg, _ := regexp.Compile(regex)
 			result_slice := reg.FindAllStringSubmatch(result.response, -1)
