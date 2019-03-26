@@ -40,10 +40,11 @@ type SchmokinResponse struct {
 }
 
 type SchmokinResult struct {
-	success bool
-	Url     string
-	Method  string
 	Results ResultCollection
+}
+
+func (self SchmokinResult) Success() bool {
+	return self.Results.Success()
 }
 
 type SchmokinHttpClient interface {
@@ -177,9 +178,8 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 
 	argsToProxy := []string{}
 	results := ResultCollection{}
-	success := true
 	instance.current = 0
-	var result SchmokinResponse
+	var response SchmokinResponse
 
 	extraIndex := SliceIndex(args, func(i string) bool {
 		return i == "--"
@@ -190,7 +190,7 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 	}
 	if !strings.HasPrefix(args[0], "-") {
 		argsToProxy = append([]string{args[0]}, argsToProxy...)
-		result = instance.httpClient.execute(argsToProxy)
+		response = instance.httpClient.execute(argsToProxy)
 	}
 
 	for instance.current < len(args) {
@@ -202,16 +202,17 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 			}
 			defer file.Close()
 			ReadLines(file, func(line string) {
-				fmt.Println(line, strings.Fields(line))
 				result := instance.schmoke(strings.Fields(line))
-				PrintResult(result)
+				results = append(results, result.Results...)
 			})
 		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
 			instance.checkArgs(args, instance.current, args[instance.current])
 			result := instance.assertions(args[instance.current], args[instance.current+1])
+			result.Method = GetMethod(response)
+			result.Url = GetUrl(response)
 			results = append(results, result)
 		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
-			instance.extractors(args, result)
+			instance.extractors(args, response)
 		default:
 			if instance.current > 0 && instance.current != len(args)-1 {
 				panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
@@ -222,25 +223,30 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 	}
 
 	schmokinResult := SchmokinResult{
-		success: success,
 		Results: results,
 	}
 
+	return schmokinResult
+}
+
+func GetMethod(result SchmokinResponse) string {
 	regex := `(?i)>\s([\w]+)\s([^\s]+)\sHTTP`
 	reg, _ := regexp.Compile(regex)
 	result_slice := reg.FindAllStringSubmatch(result.response, -1)
 	if len(result_slice) == 1 && len(result_slice[0]) == 3 {
-		schmokinResult.Method = result_slice[0][1]
+		return result_slice[0][1]
 	}
+	return ""
+}
 
-	regex = `(?i)url_effective\:\s(.*)`
-	reg, _ = regexp.Compile(regex)
-	result_slice = reg.FindAllStringSubmatch(result.response, -1)
+func GetUrl(result SchmokinResponse) string {
+	regex := `(?i)url_effective\:\s(.*)`
+	reg, _ := regexp.Compile(regex)
+	result_slice := reg.FindAllStringSubmatch(result.response, -1)
 	if len(result_slice) == 1 && len(result_slice[0]) == 2 {
-		schmokinResult.Url = result_slice[0][1]
+		return result_slice[0][1]
 	}
-
-	return schmokinResult
+	return ""
 }
 
 func CreateSchmokinApp(httpClient SchmokinHttpClient) *SchmokinApp {
@@ -282,9 +288,9 @@ func ReadLines(file *os.File, visitor func(line string)) {
 }
 
 func PrintResult(result SchmokinResult) {
-	fmt.Println(fmt.Sprintf("%s %s", result.Method, result.Url))
-	fmt.Println()
 	for _, resultItem := range result.Results {
+		fmt.Println(fmt.Sprintf("%s %s", resultItem.Method, resultItem.Url))
+		fmt.Println()
 		fmt.Println(resultItem)
 	}
 	fmt.Println()
@@ -295,10 +301,13 @@ func PrintResult(result SchmokinResult) {
 	}
 }
 
-func main() {
+func Run(args []string) SchmokinResult {
 	var httpClient = CreateCurlHttpClient()
 	var app = CreateSchmokinApp(httpClient)
-	fmt.Println(os.Args[1:])
-	var result = app.schmoke(os.Args[1:])
+	return app.schmoke(args)
+}
+
+func main() {
+	result := Run(os.Args[1:])
 	PrintResult(result)
 }

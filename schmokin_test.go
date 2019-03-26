@@ -1,4 +1,4 @@
-package main
+package main_test
 
 import (
 	"context"
@@ -6,9 +6,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	schmokin "github.com/reaandrew/schmokin"
 )
 
 func Test_Schmokin(t *testing.T) {
@@ -39,8 +42,6 @@ func Test_Schmokin(t *testing.T) {
 	}()
 
 	t.Run("Test Status Equals", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -48,13 +49,11 @@ func Test_Schmokin(t *testing.T) {
 			"200",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status NotEquals", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -62,13 +61,11 @@ func Test_Schmokin(t *testing.T) {
 			"201",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status GreaterThan", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -76,13 +73,11 @@ func Test_Schmokin(t *testing.T) {
 			"100",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status GreaterThanOrEqual Equal", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -90,13 +85,11 @@ func Test_Schmokin(t *testing.T) {
 			"200",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status GreaterThanOrEqual Greater", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -104,13 +97,11 @@ func Test_Schmokin(t *testing.T) {
 			"100",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status LessThan", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -118,13 +109,11 @@ func Test_Schmokin(t *testing.T) {
 			"201",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status LessThanOrEqual Less", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -132,13 +121,11 @@ func Test_Schmokin(t *testing.T) {
 			"201",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Status LessThanOrEqual Equal", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--status",
@@ -146,26 +133,23 @@ func Test_Schmokin(t *testing.T) {
 			"200",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("Test Body Contains", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
+			"--res-body",
 			"--co",
 			"OK",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("--resp-header", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--res-header",
@@ -174,13 +158,11 @@ func Test_Schmokin(t *testing.T) {
 			"BAR",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("-- -X POST -d 'UP'", func(t *testing.T) {
-		var httpClient = CreateCurlHttpClient()
-		var app = CreateSchmokinApp(httpClient)
 		var args = []string{
 			"http://localhost:40000/pretty",
 			"--res-body",
@@ -193,11 +175,34 @@ func Test_Schmokin(t *testing.T) {
 			"UP",
 		}
 
-		var result = app.schmoke(args)
-		assert.True(t, result.success)
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("--export", func(t *testing.T) {
 
+	})
+
+	t.Run("-f", func(t *testing.T) {
+		tmpfile, err := ioutil.TempFile("", "example")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		defer os.Remove(tmpfile.Name()) // clean up
+		tmpfile.WriteString("http://localhost:40000/pretty --status --eq 200\n")
+		tmpfile.WriteString("http://localhost:40000/pretty --status --eq 200\n")
+
+		var args = []string{
+			"-f",
+			tmpfile.Name(),
+		}
+
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
+
+		if err := tmpfile.Close(); err != nil {
+			log.Fatal(err)
+		}
 	})
 }

@@ -3,9 +3,10 @@ package main
 import "fmt"
 
 type Result struct {
+	Url       string
+	Method    string
 	Success   bool
 	Statement string
-	Expected  interface{}
 	Actual    interface{}
 }
 
