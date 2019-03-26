@@ -283,7 +283,9 @@ func ReadLines(file *os.File, visitor func(line string)) {
 		}
 
 		line := buffer.String()
-		visitor(line)
+		if line != "" {
+			visitor(line)
+		}
 	}
 }
 
@@ -292,6 +294,7 @@ func PrintResult(result SchmokinResult) {
 		fmt.Println(fmt.Sprintf("%s %s", resultItem.Method, resultItem.Url))
 		fmt.Println()
 		fmt.Println(resultItem)
+		fmt.Println()
 	}
 	fmt.Println()
 	if result.Results.Success() {
