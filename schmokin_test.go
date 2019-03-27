@@ -22,6 +22,13 @@ func Test_Schmokin(t *testing.T) {
 		cancel()
 		s.Shutdown(ctx)
 	}()
+	m.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			body = []byte("not set")
+		}
+		w.Write(body)
+	})
 	m.HandleFunc("/pretty", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-FU", "BAR")
 		if r.Method == http.MethodGet {
@@ -180,7 +187,32 @@ func Test_Schmokin(t *testing.T) {
 	})
 
 	t.Run("--export", func(t *testing.T) {
+		var args = []string{
+			"http://localhost:40000/pretty",
+			"--res-body",
+			"--export",
+			"TheBody",
+			"--",
+			"-X",
+			"POST",
+			"-d",
+			"UP",
+		}
 
+		schmokin.Run(args)
+		args = []string{
+			"http://localhost:40000/echo",
+			"--res-body",
+			"--eq",
+			"$TheBody",
+			"--",
+			"-X",
+			"POST",
+			"-d",
+			"$TheBody",
+		}
+		var result = schmokin.Run(args)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("-f", func(t *testing.T) {

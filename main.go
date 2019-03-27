@@ -213,6 +213,11 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 			results = append(results, result)
 		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
 			instance.extractors(args, response)
+		case "--export":
+			//Need to read state file on start
+			// What will the state file be called?
+			//Store up the new values
+			//Persist the state on completion
 		default:
 			if instance.current > 0 && instance.current != len(args)-1 {
 				panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
