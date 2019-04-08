@@ -215,6 +215,38 @@ func Test_Schmokin(t *testing.T) {
 		assert.True(t, result.Success())
 	})
 
+	t.Run("--export with a file", func(t *testing.T) {
+		testFilePath := "/tmp/data"
+		schmokin.WriteFile(testFilePath, []byte("UP"))
+		var args = []string{
+			"http://localhost:40000/echo",
+			"--res-body",
+			"--export",
+			"TheBody",
+			"--",
+			"-X",
+			"POST",
+			"-d",
+			"@" + testFilePath,
+		}
+
+		schmokin.Run(args)
+		args = []string{
+			"http://localhost:40000/echo",
+			"--res-body",
+			"--eq",
+			"UP",
+			"--",
+			"-X",
+			"POST",
+			"-d",
+			"$TheBody",
+		}
+		var result = schmokin.Run(args)
+
+		assert.True(t, result.Success())
+	})
+
 	t.Run("-f", func(t *testing.T) {
 		tmpfile, err := ioutil.TempFile("", "example")
 		if err != nil {

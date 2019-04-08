@@ -1,8 +1,6 @@
 package main_test
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 
 	schmokin "github.com/reaandrew/schmokin"
@@ -30,12 +28,8 @@ func Test_ArgInterceptor(t *testing.T) {
 
 	t.Run("-d with file", func(t *testing.T) {
 		data := []byte("hello\n$value\n")
-		f, _ := os.Create("./data")
-		defer func() {
-			f.Close()
-			os.Remove(f.Name())
-		}()
-		f.Write(data)
+
+		CheckError(t, schmokin.WriteFile("./data", data))
 
 		args := []string{"-d", "@data"}
 
@@ -47,7 +41,8 @@ func Test_ArgInterceptor(t *testing.T) {
 
 		newArgs := interceptor.Intercept(args)
 
-		dat, _ := ioutil.ReadFile("schmokin.payload")
+		dat, err := schmokin.ReadFile("schmokin.payload")
+		CheckError(t, err)
 
 		assert.Equal(t, string(dat), "hello\nboo\n")
 		assert.Equal(t, []string{

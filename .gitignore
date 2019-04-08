@@ -10,4 +10,6 @@ output
 dist
 schmokin
 schmokin-response
+*.payload
+data
 *.state
