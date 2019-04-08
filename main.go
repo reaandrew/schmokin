@@ -17,6 +17,7 @@ import (
 const (
 	ExpectedNotInteger string = "Argument must be a integer for the expected"
 	ActualNotInteger   string = "Argument must be a integer for the actual"
+	StatePath          string = "schmokin.state"
 )
 
 var (

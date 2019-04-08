@@ -204,7 +204,7 @@ func Test_Schmokin(t *testing.T) {
 			"http://localhost:40000/echo",
 			"--res-body",
 			"--eq",
-			"$TheBody",
+			"TheBody",
 			"--",
 			"-X",
 			"POST",
