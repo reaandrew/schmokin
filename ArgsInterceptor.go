@@ -13,11 +13,11 @@ type ArgsInterceptor struct {
 func (self ArgsInterceptor) Intercept(args []string) []string {
 	current := 0
 	for current < len(args) {
+		if len(args) < current+2 {
+			break
+		}
 		switch args[current] {
 		case "-d":
-			if len(args) < current+2 {
-				break
-			}
 			value := args[current+1]
 			if strings.HasPrefix(value, "@") {
 				data, _ := ioutil.ReadFile(value[1:])
@@ -30,6 +30,8 @@ func (self ArgsInterceptor) Intercept(args []string) []string {
 			}
 			current += 1
 		default:
+			value := args[current+1]
+			args[current+1] = self.state.Replace(value)
 			current += 1
 			break
 		}
