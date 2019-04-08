@@ -15,3 +15,10 @@ func (self StateService) Load() State {
 	}
 	return *stateRead
 }
+
+func (self StateService) Save(state State) {
+	err := WriteGob(StatePath, state)
+	if err != nil {
+		fmt.Println(err)
+	}
+}

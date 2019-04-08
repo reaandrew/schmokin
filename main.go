@@ -182,6 +182,13 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 	instance.current = 0
 	var response SchmokinResponse
 
+	var service = StateService{}
+	var state = service.Load()
+	var argInterceptor = CreateArgsInterceptor(state)
+	args = argInterceptor.Intercept(args)
+
+	//Still not adding the exported variable to the state file
+
 	extraIndex := SliceIndex(args, func(i string) bool {
 		return i == "--"
 	})
@@ -219,6 +226,7 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 			// What will the state file be called?
 			//Store up the new values
 			//Persist the state on completion
+			state[args[instance.current+1]] = instance.target
 		default:
 			if instance.current > 0 && instance.current != len(args)-1 {
 				panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
@@ -227,6 +235,8 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 
 		instance.current += 1
 	}
+
+	service.Save(state)
 
 	schmokinResult := SchmokinResult{
 		Results: results,

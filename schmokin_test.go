@@ -188,7 +188,7 @@ func Test_Schmokin(t *testing.T) {
 
 	t.Run("--export", func(t *testing.T) {
 		var args = []string{
-			"http://localhost:40000/pretty",
+			"http://localhost:40000/echo",
 			"--res-body",
 			"--export",
 			"TheBody",
@@ -204,7 +204,7 @@ func Test_Schmokin(t *testing.T) {
 			"http://localhost:40000/echo",
 			"--res-body",
 			"--eq",
-			"TheBody",
+			"UP",
 			"--",
 			"-X",
 			"POST",
