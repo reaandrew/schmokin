@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"regexp"
@@ -33,11 +30,6 @@ func checkErr(err error, msg string) {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
-}
-
-type SchmokinResponse struct {
-	response string
-	payload  string
 }
 
 type SchmokinResult struct {
@@ -190,8 +182,8 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
 			instance.checkArgs(args, instance.current, args[instance.current])
 			result := instance.assertions(args[instance.current], args[instance.current+1])
-			result.Method = GetMethod(response)
-			result.Url = GetUrl(response)
+			result.Method = response.GetMethod()
+			result.Url = response.GetUrl()
 			instance.results = append(instance.results, result)
 		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
 			instance.extractors(args, response)
@@ -249,64 +241,10 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 	return schmokinResult
 }
 
-func GetMethod(result SchmokinResponse) string {
-	regex := `(?i)>\s([\w]+)\s([^\s]+)\sHTTP`
-	reg, _ := regexp.Compile(regex)
-	result_slice := reg.FindAllStringSubmatch(result.response, -1)
-	if len(result_slice) == 1 && len(result_slice[0]) == 3 {
-		return result_slice[0][1]
-	}
-	return ""
-}
-
-func GetUrl(result SchmokinResponse) string {
-	regex := `(?i)url_effective\:\s(.*)`
-	reg, _ := regexp.Compile(regex)
-	result_slice := reg.FindAllStringSubmatch(result.response, -1)
-	if len(result_slice) == 1 && len(result_slice[0]) == 2 {
-		return result_slice[0][1]
-	}
-	return ""
-}
-
 func CreateSchmokinApp(httpClient SchmokinHttpClient) *SchmokinApp {
 	return &SchmokinApp{
 		httpClient: httpClient,
 		results:    ResultCollection{},
-	}
-}
-
-func ReadLines(file *os.File, visitor func(line string)) {
-	reader := bufio.NewReader(file)
-	for {
-		var buffer bytes.Buffer
-
-		var l []byte
-		var err error
-		var isPrefix bool
-		for {
-			l, isPrefix, err = reader.ReadLine()
-			buffer.Write(l)
-
-			// If we've reached the end of the line, stop reading.
-			if !isPrefix {
-				break
-			}
-
-			// If we're just at the EOF, break
-			if err != nil {
-				break
-			}
-		}
-
-		if err == io.EOF {
-			break
-		}
-
-		line := buffer.String()
-		if line != "" {
-			visitor(line)
-		}
 	}
 }
 
