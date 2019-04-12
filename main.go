@@ -32,18 +32,6 @@ func checkErr(err error, msg string) {
 	}
 }
 
-type SchmokinResult struct {
-	Results ResultCollection
-}
-
-func (self SchmokinResult) Success() bool {
-	return self.Results.Success()
-}
-
-type SchmokinHttpClient interface {
-	execute(args []string) SchmokinResponse
-}
-
 type SchmokinApp struct {
 	httpClient SchmokinHttpClient
 	targetKey  string
