@@ -57,6 +57,7 @@ type SchmokinApp struct {
 	targetKey  string
 	target     string
 	current    int
+	results    ResultCollection
 }
 
 func SliceIndex(slice []string, predicate func(i string) bool) int {
@@ -173,12 +174,48 @@ func (instance *SchmokinApp) extractors(args []string, result SchmokinResponse) 
 	return true
 }
 
+func (instance *SchmokinApp) processArgs(args []string, response SchmokinResponse, state State) {
+	for instance.current < len(args) {
+		switch args[instance.current] {
+		case "-f":
+			file, err := os.Open(args[instance.current+1])
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer file.Close()
+			ReadLines(file, func(line string) {
+				result := instance.schmoke(strings.Fields(line))
+				instance.results = append(instance.results, result.Results...)
+			})
+		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
+			instance.checkArgs(args, instance.current, args[instance.current])
+			result := instance.assertions(args[instance.current], args[instance.current+1])
+			result.Method = GetMethod(response)
+			result.Url = GetUrl(response)
+			instance.results = append(instance.results, result)
+		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
+			instance.extractors(args, response)
+		case "--export":
+			//Need to read state file on start
+			// What will the state file be called?
+			//Store up the new values
+			//Persist the state on completion
+			state[args[instance.current+1]] = instance.target
+		default:
+			if instance.current > 0 && instance.current != len(args)-1 {
+				panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
+			}
+		}
+
+		instance.current += 1
+	}
+}
+
 func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 
 	//Need an argument for the url
 
 	argsToProxy := []string{}
-	results := ResultCollection{}
 	instance.current = 0
 	var response SchmokinResponse
 
@@ -201,45 +238,12 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 		response = instance.httpClient.execute(argsToProxy)
 	}
 
-	for instance.current < len(args) {
-		switch args[instance.current] {
-		case "-f":
-			file, err := os.Open(args[instance.current+1])
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer file.Close()
-			ReadLines(file, func(line string) {
-				result := instance.schmoke(strings.Fields(line))
-				results = append(results, result.Results...)
-			})
-		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
-			instance.checkArgs(args, instance.current, args[instance.current])
-			result := instance.assertions(args[instance.current], args[instance.current+1])
-			result.Method = GetMethod(response)
-			result.Url = GetUrl(response)
-			results = append(results, result)
-		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
-			instance.extractors(args, response)
-		case "--export":
-			//Need to read state file on start
-			// What will the state file be called?
-			//Store up the new values
-			//Persist the state on completion
-			state[args[instance.current+1]] = instance.target
-		default:
-			if instance.current > 0 && instance.current != len(args)-1 {
-				panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
-			}
-		}
-
-		instance.current += 1
-	}
+	instance.processArgs(args, response, state)
 
 	service.Save(state)
 
 	schmokinResult := SchmokinResult{
-		Results: results,
+		Results: instance.results,
 	}
 
 	return schmokinResult
@@ -268,6 +272,7 @@ func GetUrl(result SchmokinResponse) string {
 func CreateSchmokinApp(httpClient SchmokinHttpClient) *SchmokinApp {
 	return &SchmokinApp{
 		httpClient: httpClient,
+		results:    ResultCollection{},
 	}
 }
 
