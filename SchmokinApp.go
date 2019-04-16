@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type SchmokinApp struct {
@@ -142,14 +143,14 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 			defer file.Close()
 			ReadLines(file, func(line string) {
 				result := instance.schmoke(strings.Fields(line))
-				instance.results = append(instance.results, result.Results...)
+				instance.addResults(result.Results...)
 			})
 		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
 			instance.checkArgs(args, instance.current, args[instance.current])
 			result := instance.assertions(args[instance.current], args[instance.current+1])
 			result.Method = response.GetMethod()
 			result.Url = response.GetUrl()
-			instance.results = append(instance.results, result)
+			instance.addResults(result)
 		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
 			instance.extractors(args, response)
 		case "--export":
@@ -168,10 +169,17 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 	}
 }
 
+func (instance *SchmokinApp) addResults(results ...Result) {
+	instance.results = append(instance.results, results...)
+}
+
 func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
-
+	if len(args) == 0 {
+		return SchmokinResult{
+			Error: fmt.Errorf("Must supply arguments"),
+		}
+	}
 	//Need an argument for the url
-
 	argsToProxy := []string{}
 	instance.current = 0
 	var response SchmokinResponse
@@ -190,12 +198,23 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 		argsToProxy = append(argsToProxy, args[extraIndex+1:]...)
 		args = args[:extraIndex]
 	}
+
 	if !strings.HasPrefix(args[0], "-") {
 		argsToProxy = append([]string{args[0]}, argsToProxy...)
-		response = instance.httpClient.execute(argsToProxy)
+		response, err := instance.httpClient.execute(argsToProxy)
+		log.Debug("Executing the curl")
+		if err == nil {
+			log.Debug("Executed the curl successfully")
+			instance.processArgs(args, response, state)
+		} else {
+			log.Error(err)
+			instance.addResults(Result{
+				Error: err,
+			})
+		}
+	} else {
+		instance.processArgs(args, response, state)
 	}
-
-	instance.processArgs(args, response, state)
 
 	service.Save(state)
 

@@ -5,6 +5,7 @@ import "fmt"
 type Result struct {
 	Url       string
 	Method    string
+	Error     error
 	Success   bool
 	Statement string
 	Actual    interface{}

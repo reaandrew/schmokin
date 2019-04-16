@@ -263,10 +263,16 @@ func Test_Schmokin(t *testing.T) {
 		}
 
 		var result = schmokin.Run(args)
+		fmt.Println(result)
 		assert.True(t, result.Success())
 
 		if err := tmpfile.Close(); err != nil {
 			log.Fatal(err)
 		}
+	})
+
+	t.Run("Invoke without any arguments", func(t *testing.T) {
+		var result = schmokin.Run([]string{})
+		assert.NotNil(t, result.Error)
 	})
 }

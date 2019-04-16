@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 	"os/exec"
 )
 
@@ -11,7 +10,7 @@ type CurlHttpClient struct {
 	args []string
 }
 
-func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
+func (instance CurlHttpClient) execute(args []string) (SchmokinResponse, error) {
 	process := "curl"
 
 	executeArgs := append(args, instance.args...)
@@ -20,9 +19,7 @@ func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
 	var err error
 
 	if output, err = exec.Command(process, executeArgs...).CombinedOutput(); err != nil {
-		exitError := err.(*exec.ExitError)
-		fmt.Println(string(exitError.Stderr))
-		os.Exit(1)
+		return SchmokinResponse{}, err
 	}
 
 	payloadData, _ := ioutil.ReadFile("schmokin-response")
@@ -30,7 +27,7 @@ func (instance CurlHttpClient) execute(args []string) SchmokinResponse {
 	return SchmokinResponse{
 		payload:  string(payloadData),
 		response: string(output),
-	}
+	}, nil
 }
 
 func CreateCurlHttpClient() CurlHttpClient {

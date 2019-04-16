@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/fatih/color"
 )
@@ -49,7 +52,29 @@ func Run(args []string) SchmokinResult {
 	return app.schmoke(args)
 }
 
+func ensureWorkingDirectory() {
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(usr.HomeDir)
+}
+
+func init() {
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+
+	// Only log the warning severity or above.
+	log.SetLevel(log.DebugLevel)
+}
+
 func main() {
+	ensureWorkingDirectory()
 	result := Run(os.Args[1:])
-	PrintResult(result)
+	if result.Error != nil {
+		fmt.Println(result.Error)
+	} else {
+		PrintResult(result)
+	}
 }

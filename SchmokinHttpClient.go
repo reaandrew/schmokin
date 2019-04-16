@@ -1,5 +1,5 @@
 package main
 
 type SchmokinHttpClient interface {
-	execute(args []string) SchmokinResponse
+	execute(args []string) (SchmokinResponse, error)
 }
