@@ -143,6 +143,7 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 			defer file.Close()
 			ReadLines(file, func(line string) {
 				result := instance.schmoke(strings.Fields(line))
+				log.WithField("result_count", len(result.Results)).Debug("File Line Executed")
 				instance.addResults(result.Results...)
 			})
 		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
@@ -170,6 +171,7 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 }
 
 func (instance *SchmokinApp) addResults(results ...Result) {
+	log.Debug("Adding Result")
 	instance.results = append(instance.results, results...)
 }
 

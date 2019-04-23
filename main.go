@@ -33,12 +33,11 @@ func checkErr(err error, msg string) {
 
 func PrintResult(result SchmokinResult) {
 	for _, resultItem := range result.Results {
+		fmt.Println("Something")
 		fmt.Println(fmt.Sprintf("%s %s", resultItem.Method, resultItem.Url))
-		fmt.Println()
 		fmt.Println(resultItem)
 		fmt.Println()
 	}
-	fmt.Println()
 	if result.Results.Success() {
 		fmt.Println(fmt.Sprintf("Result: %s", GreenText("SUCCESS")))
 	} else {
