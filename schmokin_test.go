@@ -1,11 +1,9 @@
 package main_test
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"testing"
 
@@ -15,38 +13,9 @@ import (
 )
 
 func Test_Schmokin(t *testing.T) {
-	m := http.NewServeMux()
-	s := http.Server{Addr: ":40000", Handler: m}
-	ctx, cancel := context.WithCancel(context.Background())
-	defer func() {
-		cancel()
-		s.Shutdown(ctx)
-	}()
-	m.HandleFunc("/echo", func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			body = []byte("not set")
-		}
-		w.Write(body)
-	})
-	m.HandleFunc("/pretty", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("X-FU", "BAR")
-		if r.Method == http.MethodGet {
-			w.Write([]byte("OK"))
-		} else {
-			body, err := ioutil.ReadAll(r.Body)
-			if err != nil {
-				body = []byte("not set")
-			}
-			message := fmt.Sprintf("Method: %v Body: %v", r.Method, string(body))
-			w.Write([]byte(message))
-		}
-	})
-	go func() {
-		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-	}()
+	server := CreateTestServer()
+	defer server.Stop()
+	go server.Start()
 
 	t.Run("Test Status Equals", func(t *testing.T) {
 		var args = []string{
