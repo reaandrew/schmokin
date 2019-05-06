@@ -10,7 +10,7 @@ type CurlHttpClient struct {
 	args []string
 }
 
-func (instance CurlHttpClient) execute(args []string) (SchmokinResponse, error) {
+func (instance CurlHttpClient) Execute(args []string) (SchmokinResponse, error) {
 	process := "curl"
 
 	executeArgs := append(args, instance.args...)
