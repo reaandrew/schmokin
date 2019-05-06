@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptrace"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type GoHttpClient struct {
@@ -15,9 +18,9 @@ func CreateGoHttpClient() GoHttpClient {
 	return GoHttpClient{}
 }
 
-func (instance GoHttpClient) execute(args []string) (SchmokinResponse, error) {
+func (instance GoHttpClient) Execute(args []string) (SchmokinResponse, error) {
 	c := http.Client{}
-	req, err := http.NewRequest("GET", "https://www.google.com", nil)
+	req, err := NewRequestAdapter().CreateRequest(args)
 	if err != nil {
 		panic(err)
 	}
@@ -47,8 +50,17 @@ func (instance GoHttpClient) execute(args []string) (SchmokinResponse, error) {
 	if err != nil {
 		panic(err)
 	}
-	io.Copy(os.Stdout, resp.Body)
-	fmt.Println("Done!")
+	defer resp.Body.Close()
 
-	return SchmokinResponse{}, nil
+	io.Copy(os.Stdout, resp.Body)
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodyString := string(bodyBytes)
+
+	return SchmokinResponse{
+		payload: bodyString,
+	}, nil
 }

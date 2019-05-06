@@ -4,16 +4,23 @@ import (
 	"testing"
 
 	schmokin "github.com/reaandrew/schmokin"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_GoHttpClient(t *testing.T) {
-	client := schmokin.CreateGoHttpClient()
 
-	response, err := client.Execute([]string{
-		"-X",
-		"POST",
+	server := CreateTestServer()
+	defer server.Stop()
+	go server.Start()
+
+	t.Run("POST", func(t *testing.T) {
+		client := schmokin.CreateGoHttpClient()
+
+		client.Execute([]string{
+			"http://localhost:40000/pretty",
+			"-X",
+			"POST",
+		})
+
+		//assert.Equal(t, "POST", response.GetMethod())
 	})
-
-	assert.Equal(t, "POST", response.GetMethod())
 }

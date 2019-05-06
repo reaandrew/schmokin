@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -16,6 +17,8 @@ func Test_Schmokin(t *testing.T) {
 	server := CreateTestServer()
 	defer server.Stop()
 	go server.Start()
+
+	time.Sleep(2 * time.Second)
 
 	t.Run("Test Status Equals", func(t *testing.T) {
 		var args = []string{

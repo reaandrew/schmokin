@@ -58,6 +58,8 @@ func (instance *SchmokinApp) assertNumeric(arg string, expected string) Result {
 	expectedValue, err := strconv.Atoi(expected)
 	checkErr(err, ExpectedNotInteger)
 	actual, err := strconv.Atoi(instance.target)
+
+	log.Debug(instance.target)
 	checkErr(err, ActualNotInteger)
 	result := Result{
 		Actual: actual,
@@ -203,7 +205,7 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 
 	if !strings.HasPrefix(args[0], "-") {
 		argsToProxy = append([]string{args[0]}, argsToProxy...)
-		response, err := instance.httpClient.execute(argsToProxy)
+		response, err := instance.httpClient.Execute(argsToProxy)
 		log.Debug("Executing the curl")
 		if err == nil {
 			log.Debug("Executed the curl successfully")

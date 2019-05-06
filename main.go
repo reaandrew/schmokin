@@ -27,7 +27,7 @@ func checkErr(err error, msg string) {
 	if err != nil {
 		err = fmt.Errorf(msg)
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		panic(err)
 	}
 }
 
@@ -46,7 +46,8 @@ func PrintResult(result SchmokinResult) {
 }
 
 func Run(args []string) SchmokinResult {
-	var httpClient = CreateCurlHttpClient()
+	//var httpClient = CreateCurlHttpClient()
+	var httpClient = CreateGoHttpClient()
 	var app = CreateSchmokinApp(httpClient)
 	return app.schmoke(args)
 }
