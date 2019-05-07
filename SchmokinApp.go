@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -104,27 +103,12 @@ func (instance *SchmokinApp) extractors(args []string, result SchmokinResponse) 
 	switch args[instance.current] {
 	case "--status":
 		instance.targetKey = "HTTP Status Code"
-		reg, _ := regexp.Compile(`http_code:\s([\d]+)`)
-		result_slice := reg.FindAllStringSubmatch(result.response, -1)
-		if len(result_slice) == 1 && len(result_slice[0]) == 2 {
-			instance.target = result_slice[0][1]
-		}
-	case "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective":
-		reg, _ := regexp.Compile(fmt.Sprintf(`%s:\s([\d]+)`, args[instance.current]))
-		result_slice := reg.FindAllStringSubmatch(result.response, -1)
-		if len(result_slice) == 1 && len(result_slice[0]) == 2 {
-			instance.target = result_slice[0][1]
-		}
+		instance.target = strconv.Itoa(result.responseObj.StatusCode)
 	case "--res-header":
 		instance.checkArgs(args, instance.current, "--res-header")
-		regex := fmt.Sprintf(`(?i)<\s%s:\s([^\n\r]+)`, args[instance.current+1])
-		reg, _ := regexp.Compile(regex)
-		result_slice := reg.FindAllStringSubmatch(result.response, -1)
-
-		if len(result_slice) == 1 && len(result_slice[0]) == 2 {
-			instance.target = result_slice[0][1]
-			instance.targetKey = fmt.Sprintf("Response Header: %s", args[instance.current+1])
-		}
+		headerKey := args[instance.current+1]
+		instance.target = result.responseObj.Header.Get(headerKey)
+		instance.targetKey = fmt.Sprintf("Response Header: %s", headerKey)
 		instance.current += 1
 	case "--res-body":
 		instance.target = result.payload
@@ -154,8 +138,6 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 			result.Method = response.GetMethod()
 			result.Url = response.GetUrl()
 			instance.addResults(result)
-		case "--status", "--filename_effective", "--ftp_entry_path", "--http_code", "--http_connect", "--local_ip", "--local_port", "--num_connects", "--num_redirects", "--redirect_url", "--remote_ip", "--remote_port", "--size_download", "--size_header", "--size_request", "--size_upload", "--speed_download", "--speed_upload", "--ssl_verify_result", "--time_appconnect", "--time_connect", "--time_namelookup", "--time_pretransfer", "--time_redirect", "--time_starttransfer", "--time_total", "--url_effective", "--res-header", "--res-body":
-			instance.extractors(args, response)
 		case "--export":
 			//Need to read state file on start
 			// What will the state file be called?

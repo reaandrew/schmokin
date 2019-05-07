@@ -1,10 +1,14 @@
 package main
 
-import "regexp"
+import (
+	"net/http"
+	"regexp"
+)
 
 type SchmokinResponse struct {
-	response string
-	payload  string
+	response    string
+	payload     string
+	responseObj *http.Response
 }
 
 func (instance SchmokinResponse) GetMethod() string {

@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptrace"
-	"os"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -52,8 +50,6 @@ func (instance GoHttpClient) Execute(args []string) (SchmokinResponse, error) {
 	}
 	defer resp.Body.Close()
 
-	io.Copy(os.Stdout, resp.Body)
-
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -61,6 +57,7 @@ func (instance GoHttpClient) Execute(args []string) (SchmokinResponse, error) {
 	bodyString := string(bodyBytes)
 
 	return SchmokinResponse{
-		payload: bodyString,
+		payload:     bodyString,
+		responseObj: resp,
 	}, nil
 }
