@@ -111,4 +111,7 @@ OPTIONAL:
 
 ```
 ./schmokin -X POST --assertion "Status gte 200" --assertion "Content-Type eq 'Something'" --extract "CT=Content-Type"
+BETTER for the argument definitions 
+
+--json-extract --json-assert --extract --assert --export  --xpath-extract --xpath-assert
 ```
