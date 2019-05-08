@@ -6,6 +6,7 @@ import (
 	"os/user"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 
 	"github.com/fatih/color"
 )
@@ -70,11 +71,25 @@ func init() {
 }
 
 func main() {
-	ensureWorkingDirectory()
-	result := Run(os.Args[1:])
-	if result.Error != nil {
-		fmt.Println(result.Error)
-	} else {
-		PrintResult(result)
+	/*
+		ensureWorkingDirectory()
+		result := Run(os.Args[1:])
+		if result.Error != nil {
+			fmt.Println(result.Error)
+		} else {
+			PrintResult(result)
+		}
+	*/
+	app := cli.NewApp()
+	app.Name = "boom"
+	app.Usage = "make an explosive entrance"
+	app.Action = func(c *cli.Context) error {
+		fmt.Println("boom! I say!")
+		return nil
+	}
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
 	}
 }

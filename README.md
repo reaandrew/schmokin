@@ -106,3 +106,9 @@ schmokin $URL --res-header "Server" --contains 'Python'
 ```
 ./schmokin $ENDPOINT/array --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
 ```
+
+OPTIONAL:
+
+```
+./schmokin -X POST --assertion "Status gte 200" --assertion "Content-Type eq 'Something'" --extract "CT=Content-Type"
+```
