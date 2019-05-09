@@ -138,6 +138,8 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 			result.Method = response.GetMethod()
 			result.Url = response.GetUrl()
 			instance.addResults(result)
+		case "--status", "--res-header", "--res-body":
+			instance.extractors(args, response)
 		case "--export":
 			//Need to read state file on start
 			// What will the state file be called?
