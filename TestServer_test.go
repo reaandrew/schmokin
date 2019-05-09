@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -29,6 +30,13 @@ func CreateTestServer() TestServer {
 	})
 	m.HandleFunc("/echo_method", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Method", r.Method)
+		w.Write([]byte(r.Method))
+	})
+	m.HandleFunc("/echo_headers", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Method", r.Method)
+		for key, value := range r.Header {
+			w.Header().Set(key, strings.Join(value, ","))
+		}
 		w.Write([]byte(r.Method))
 	})
 	m.HandleFunc("/pretty", func(w http.ResponseWriter, r *http.Request) {

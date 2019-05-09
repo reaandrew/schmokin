@@ -261,4 +261,20 @@ func Test_Schmokin(t *testing.T) {
 		assert.Nil(t, result.Error)
 		assert.True(t, result.Success())
 	})
+
+	t.Run("AssertHeader Content-Type", func(tt *testing.T) {
+		args := []string{
+			"http://localhost:40000/echo_headers",
+			"-H",
+			"Content-Type: application/barney",
+			"--res-header",
+			"Content-Type",
+			"--eq",
+			"application/barney",
+		}
+		var result = schmokin.Run(args)
+		fmt.Println(result)
+		assert.Nil(t, result.Error)
+		assert.True(t, result.Success())
+	})
 }
