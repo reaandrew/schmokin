@@ -27,6 +27,10 @@ func CreateTestServer() TestServer {
 		}
 		w.Write(body)
 	})
+	m.HandleFunc("/echo_method", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Method", r.Method)
+		w.Write([]byte(r.Method))
+	})
 	m.HandleFunc("/pretty", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("X-FU", "BAR")
 		if r.Method == http.MethodGet {

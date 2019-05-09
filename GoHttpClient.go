@@ -17,8 +17,10 @@ func CreateGoHttpClient() GoHttpClient {
 }
 
 func (instance GoHttpClient) Execute(args []string) (SchmokinResponse, error) {
+	fmt.Println("Go HTTP Client Args", args)
 	c := http.Client{}
 	req, err := NewRequestAdapter().CreateRequest(args)
+	fmt.Println("Request Method", req.Method)
 	if err != nil {
 		panic(err)
 	}

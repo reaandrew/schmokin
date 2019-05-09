@@ -247,4 +247,18 @@ func Test_Schmokin(t *testing.T) {
 		var result = schmokin.Run([]string{})
 		assert.NotNil(t, result.Error)
 	})
+
+	t.Run("Invoke without the --", func(t *testing.T) {
+		args := []string{
+			"http://localhost:40000/echo_method",
+			"-X",
+			"POST",
+			"--res-body",
+			"--eq",
+			"POST",
+		}
+		var result = schmokin.Run(args)
+		assert.Nil(t, result.Error)
+		assert.True(t, result.Success())
+	})
 }

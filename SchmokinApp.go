@@ -147,9 +147,11 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 			//Persist the state on completion
 			state[args[instance.current+1]] = instance.target
 		default:
-			if instance.current > 0 && instance.current != len(args)-1 {
-				panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
-			}
+			/*
+				if instance.current > 0 && instance.current != len(args)-1 {
+					panic(fmt.Sprintf("Unknown Arg: %v", args[instance.current]))
+				}
+			*/
 		}
 
 		instance.current += 1
@@ -168,7 +170,6 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 		}
 	}
 	//Need an argument for the url
-	argsToProxy := []string{}
 	instance.current = 0
 	var response SchmokinResponse
 
@@ -177,22 +178,11 @@ func (instance *SchmokinApp) schmoke(args []string) SchmokinResult {
 	var argInterceptor = CreateArgsInterceptor(state)
 	args = argInterceptor.Intercept(args)
 
-	//Still not adding the exported variable to the state file
-
-	extraIndex := SliceIndex(args, func(i string) bool {
-		return i == "--"
-	})
-	if extraIndex > -1 {
-		argsToProxy = append(argsToProxy, args[extraIndex+1:]...)
-		args = args[:extraIndex]
-	}
-
 	if !strings.HasPrefix(args[0], "-") {
-		argsToProxy = append([]string{args[0]}, argsToProxy...)
-		response, err := instance.httpClient.Execute(argsToProxy)
-		log.Debug("Executing the curl")
+		response, err := instance.httpClient.Execute(args)
+		log.Debug("Executing the http client")
 		if err == nil {
-			log.Debug("Executed the curl successfully")
+			log.Debug("Executed the client successfully")
 			instance.processArgs(args, response, state)
 		} else {
 			log.Error(err)
