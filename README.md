@@ -1,6 +1,7 @@
 # Schmokin
 
 [![Build Status](https://travis-ci.org/reaandrew/schmokin.svg?branch=master)](https://travis-ci.org/reaandrew/schmokin)
+[![Build status](https://ci.appveyor.com/api/projects/status/vmplaucxbdomlpoc?svg=true)](https://ci.appveyor.com/project/REAANDREW/schmokin)
 
 A simple utility which wraps curl and allows you to make assertions on the HTTP requests, responses, timings and other metrics provided by curl.
 
@@ -107,7 +108,14 @@ schmokin $URL --res-header "Server" --contains 'Python'
 ```
 
 
-
 https://github.com/mh-cbon/go-msi
 https://medium.com/@mattholt/packaging-a-go-application-for-macos-f7084b00f6b5
 
+```
+./schmokin -X POST --assertion "Status gte 200" --assertion "Content-Type eq 'Something'" --extract "CT=Content-Type"
+BETTER for the argument definitions 
+
+--json-extract --json-assert --extract --assert --export  --xpath-extract --xpath-assert
+
+https://github.com/tidwall/gjson
+```

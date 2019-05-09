@@ -1,28 +1,24 @@
-language: bash
 sudo: false
-env:
-  - TEST=1
+
+language: go
+
+go:
+  - 1.11
+
 os:
   - linux
   - osx
-branches:
-  only:
-  - master
-  - hotfix
-  - release
-  - develop
-  - feature/.*
+
+git:
+  depth: 1
+
+install: true
+
+before_script:
+  - go get -t
+
+# script always runs to completion (set +e). If we have linter issues AND a
+# failing test, we want to see both. Configure golangci-lint with a
+# .golangci.yml file at the top level of your repo.
 script:
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then make test_osx; fi;
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make test; fi;
-after_success:
-  - APP_VERSION="$(cat VERSION)"
-  - if [ "$TRAVIS_BRANCH" == "develop" ]; then APP_VERSION="latest"; fi;
-  - mkdir -p dist/
-  - cp ./schmokin_install dist/
-  - tar -czvf dist/schmokin.tar.gz libs/ schmokin schmokin.format
-  - sha1sum schmokin > dist/schmokin.sha1
-  - sed -i "s/0.1.0/\"$(cat VERSION)\"/g" dist/schmokin
-  - sed -i "s/CHECKSUM_HERE/\"$(sha1sum schmokin | cut -d ' ' -f1)\"/g" dist/schmokin
-  - curl -L https://github.com/tcnksm/ghr/releases/download/v0.10.1/ghr_v0.10.1_linux_amd64.tar.gz | tar xz
-  - ./ghr_v0.10.1_linux_amd64/ghr --delete --username reaandrew --token $GITHUB_TOKEN "$APP_VERSION" dist/
+  - go test -v -race ./...  # Run all the tests with the race detector enabled
