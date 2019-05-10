@@ -267,14 +267,28 @@ func Test_Schmokin(t *testing.T) {
 			"http://localhost:40000/echo_headers",
 			"-H",
 			"Content-Type: application/barney",
-			"--res-header",
-			"Content-Type",
-			"--eq",
-			"application/barney",
+			"--assert",
+			"Header:Content-Type eq application/barney",
+			"Form:Content-Type eq application/barney",
+			"Query:Content-Type eq application/barney",
+			"Raw:Content-Type eq application/barney",
 		}
 		var result = schmokin.Run(args)
 		fmt.Println(result)
 		assert.Nil(t, result.Error)
 		assert.True(t, result.Success())
+
+		args = []string{
+			"http://localhost:40000/echo_headers",
+			"-H",
+			"Content-Type: application/barney",
+			"--assert-header",
+			"Content-Type eq booboo",
+		}
+		result = schmokin.Run(args)
+		fmt.Println(result)
+		assert.Nil(t, result.Error)
+		assert.False(t, result.Success())
 	})
+
 }

@@ -81,7 +81,13 @@ func (instance *SchmokinApp) assertNumeric(arg string, expected string) Result {
 	return result
 }
 
-func (instance *SchmokinApp) assertions(arg string, expected string) (result Result) {
+type Triple struct {
+	Subject string
+	Verb    string
+	Object  string
+}
+
+func (instance *SchmokinApp) assertions(arg string, expected string, schmokinResult SchmokinResponse) (result Result) {
 	switch arg {
 	case "--eq", "--ne":
 		result = instance.assertEquality(arg, expected)
@@ -93,6 +99,22 @@ func (instance *SchmokinApp) assertions(arg string, expected string) (result Res
 			Statement: fmt.Sprintf("%s to contain %v", instance.targetKey, expected),
 			Success:   strings.Contains(instance.target, expected),
 		}
+	case "--assert":
+		fields := strings.Fields(expected)
+		triple := Triple{
+			Subject: fields[0],
+			Verb:    fields[1],
+			Object:  fields[2],
+		}
+		if strings.ToUpper(triple.Verb) == "EQ" {
+			headerValue := schmokinResult.responseObj.Header.Get(triple.Subject)
+			result = Result{
+				Success:   headerValue == triple.Object,
+				Statement: fmt.Sprintf("%s to equal %s", fmt.Sprintf("Response Header: %s", triple.Subject), triple.Object),
+				Actual:    headerValue,
+			}
+		}
+		fmt.Printf("%+v\n", triple)
 	}
 	instance.current += 1
 	return
@@ -132,9 +154,9 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 				log.WithField("result_count", len(result.Results)).Debug("File Line Executed")
 				instance.addResults(result.Results...)
 			})
-		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co":
+		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co", "--assert-header":
 			instance.checkArgs(args, instance.current, args[instance.current])
-			result := instance.assertions(args[instance.current], args[instance.current+1])
+			result := instance.assertions(args[instance.current], args[instance.current+1], response)
 			result.Method = response.GetMethod()
 			result.Url = response.GetUrl()
 			instance.addResults(result)

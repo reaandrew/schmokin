@@ -113,9 +113,20 @@ https://medium.com/@mattholt/packaging-a-go-application-for-macos-f7084b00f6b5
 
 ```
 ./schmokin -X POST --assertion "Status gte 200" --assertion "Content-Type eq 'Something'" --extract "CT=Content-Type"
+
+--extractJson "Body someValue '.number'"
+--extractXPath "Header someValue '.number'"
+--extractRegex "Query someValue '.number'"
+
 BETTER for the argument definitions 
 
---json-extract --json-assert --extract --assert --export  --xpath-extract --xpath-assert
+--json-extract --json-assert --extract --assert  --assert-status --export  --xpath-extract --xpath-assert
+
+Order or presedence:
+- Load
+- Extract
+- Assert
+- Export
 
 https://github.com/tidwall/gjson
 ```
