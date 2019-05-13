@@ -99,7 +99,7 @@ func (instance *SchmokinApp) assertions(arg string, expected string, schmokinRes
 			Statement: fmt.Sprintf("%s to contain %v", instance.targetKey, expected),
 			Success:   strings.Contains(instance.target, expected),
 		}
-	case "--assert":
+	case "--assert-header":
 		fields := strings.Fields(expected)
 		triple := Triple{
 			Subject: fields[0],
