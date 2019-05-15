@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/tidwall/gjson"
 )
 
 type SchmokinApp struct {
@@ -15,6 +16,7 @@ type SchmokinApp struct {
 	target     string
 	current    int
 	results    ResultCollection
+	data       map[string]interface{}
 }
 
 func SliceIndex(slice []string, predicate func(i string) bool) int {
@@ -114,7 +116,21 @@ func (instance *SchmokinApp) assertions(arg string, expected string, schmokinRes
 				Actual:    headerValue,
 			}
 		}
-		fmt.Printf("%+v\n", triple)
+	case "--assert-context":
+		fields := strings.Fields(expected)
+		triple := Triple{
+			Subject: fields[0],
+			Verb:    fields[1],
+			Object:  fields[2],
+		}
+		if strings.ToUpper(triple.Verb) == "EQ" {
+			value := instance.data[triple.Subject]
+			result = Result{
+				Success:   value == triple.Object,
+				Statement: fmt.Sprintf("%s to equal %s", fmt.Sprintf("Context Variable: %s", triple.Subject), triple.Object),
+				Actual:    value,
+			}
+		}
 	}
 	instance.current += 1
 	return
@@ -135,6 +151,12 @@ func (instance *SchmokinApp) extractors(args []string, result SchmokinResponse) 
 	case "--res-body":
 		instance.target = result.payload
 		instance.targetKey = "Response Body"
+	case "--extract-json":
+		fields := strings.Fields(args[instance.current+1])
+		key := fields[0]
+		json := fields[1]
+		value := gjson.Get(result.payload, json)
+		instance.data[key] = value.String()
 	}
 
 	return true
@@ -142,6 +164,7 @@ func (instance *SchmokinApp) extractors(args []string, result SchmokinResponse) 
 
 func (instance *SchmokinApp) processArgs(args []string, response SchmokinResponse, state State) {
 	for instance.current < len(args) {
+
 		switch args[instance.current] {
 		case "-f":
 			file, err := os.Open(args[instance.current+1])
@@ -154,13 +177,13 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 				log.WithField("result_count", len(result.Results)).Debug("File Line Executed")
 				instance.addResults(result.Results...)
 			})
-		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co", "--assert-header":
+		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co", "--assert-header", "--assert-context":
 			instance.checkArgs(args, instance.current, args[instance.current])
 			result := instance.assertions(args[instance.current], args[instance.current+1], response)
 			result.Method = response.GetMethod()
 			result.Url = response.GetUrl()
 			instance.addResults(result)
-		case "--status", "--res-header", "--res-body":
+		case "--status", "--res-header", "--res-body", "--extract-json":
 			instance.extractors(args, response)
 		case "--export":
 			//Need to read state file on start
@@ -229,5 +252,6 @@ func CreateSchmokinApp(httpClient SchmokinHttpClient) *SchmokinApp {
 	return &SchmokinApp{
 		httpClient: httpClient,
 		results:    ResultCollection{},
+		data:       map[string]interface{}{},
 	}
 }

@@ -28,12 +28,17 @@ func CreateTestServer() TestServer {
 		}
 		w.Write(body)
 	})
+	m.HandleFunc("/json", func(w http.ResponseWriter, r *http.Request) {
+		json := `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
+		w.Write([]byte(json))
+	})
 	m.HandleFunc("/echo_method", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Method", r.Method)
 		w.Write([]byte(r.Method))
 	})
+	m.HandleFunc("/redirect", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "http://localhost:40000/echo_method", 301)
+	})
 	m.HandleFunc("/echo_headers", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Method", r.Method)
 		for key, value := range r.Header {
 			w.Header().Set(key, strings.Join(value, ","))
 		}

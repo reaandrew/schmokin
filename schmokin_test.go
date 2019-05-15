@@ -1,7 +1,6 @@
 package main_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -235,7 +234,6 @@ func Test_Schmokin(t *testing.T) {
 		}
 
 		var result = schmokin.Run(args)
-		fmt.Println(result)
 		assert.True(t, result.Success())
 
 		if err := tmpfile.Close(); err != nil {
@@ -262,7 +260,7 @@ func Test_Schmokin(t *testing.T) {
 		assert.True(t, result.Success())
 	})
 
-	t.Run("AssertHeader Content-Type", func(tt *testing.T) {
+	t.Run("AssertHeader", func(t *testing.T) {
 		args := []string{
 			"http://localhost:40000/echo_headers",
 			"-H",
@@ -271,9 +269,21 @@ func Test_Schmokin(t *testing.T) {
 			"Content-Type eq booboo",
 		}
 		result := schmokin.Run(args)
-		fmt.Println(result)
 		assert.Nil(t, result.Error)
 		assert.False(t, result.Success())
+	})
+
+	t.Run("ExtractJson", func(t *testing.T) {
+		args := []string{
+			"http://localhost:40000/json",
+			"--extract-json",
+			"LASTNAME name.last",
+			"--assert-context",
+			"LASTNAME eq Prichard",
+		}
+		result := schmokin.Run(args)
+		assert.Nil(t, result.Error)
+		assert.True(t, result.Success())
 	})
 
 }
