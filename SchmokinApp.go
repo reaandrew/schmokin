@@ -131,6 +131,18 @@ func (instance *SchmokinApp) assertions(arg string, expected string, schmokinRes
 				Actual:    value,
 			}
 		}
+	case "--assert-status":
+		fields := strings.Fields(expected)
+		if strings.ToUpper(fields[0]) == "EQ" {
+			value := schmokinResult.responseObj.StatusCode
+			actual, _ := strconv.Atoi(fields[1])
+			result = Result{
+				Success:   value == actual,
+				Statement: fmt.Sprintf("%v to equal %v", fmt.Sprintf("Status Code: %v", value), actual),
+				Actual:    value,
+			}
+		}
+
 	}
 	instance.current += 1
 	return
@@ -177,7 +189,7 @@ func (instance *SchmokinApp) processArgs(args []string, response SchmokinRespons
 				log.WithField("result_count", len(result.Results)).Debug("File Line Executed")
 				instance.addResults(result.Results...)
 			})
-		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co", "--assert-header", "--assert-context":
+		case "--gt", "--gte", "--lt", "--lte", "--eq", "--ne", "--co", "--assert-header", "--assert-context", "--assert-status":
 			instance.checkArgs(args, instance.current, args[instance.current])
 			result := instance.assertions(args[instance.current], args[instance.current+1], response)
 			result.Method = response.GetMethod()

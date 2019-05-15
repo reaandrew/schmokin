@@ -1,22 +1,30 @@
 plan:
-  - name: Something
-    http:
-      url: https://www.google.com
-      method: POST
-      data: |
-        Hello, world!
-      headers:
-        Content-Type: application/json
-    extractors:
-      json:
-        - key: Something
-          query: name.last
-    assertions:
-      context:
-        - key: Something
-          expected: Prichard
-          type: eq
-    exports:
-      - key: Something
-
-
+  nodes:
+    - ip: 1.1.1.1
+    - ip: 1.2.2.2
+  workers: 50
+  pipelines:
+    - name: Something
+      stages:
+      - name: Something
+        http:
+          url: https://www.google.com
+          method: POST
+          data: |
+            Hello, world!
+          headers:
+            Content-Type: application/json
+        extractors:
+          json:
+            - key: Something
+              query: name.last
+        assertions:
+          context:
+            - key: Something
+              expected: Prichard
+              type: eq
+        exports:
+          - key: Something
+  reports:
+    html:
+      output-path: ./reports

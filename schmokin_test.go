@@ -16,7 +16,6 @@ func Test_Schmokin(t *testing.T) {
 	server := CreateTestServer()
 	defer server.Stop()
 	go server.Start()
-
 	time.Sleep(2 * time.Second)
 
 	t.Run("Test Status Equals", func(t *testing.T) {
@@ -260,7 +259,7 @@ func Test_Schmokin(t *testing.T) {
 		assert.True(t, result.Success())
 	})
 
-	t.Run("AssertHeader", func(t *testing.T) {
+	t.Run("Assert Header", func(t *testing.T) {
 		args := []string{
 			"http://localhost:40000/echo_headers",
 			"-H",
@@ -271,6 +270,17 @@ func Test_Schmokin(t *testing.T) {
 		result := schmokin.Run(args)
 		assert.Nil(t, result.Error)
 		assert.False(t, result.Success())
+	})
+
+	t.Run("Assert Status", func(t *testing.T) {
+		args := []string{
+			"http://localhost:40000/status?value=418",
+			"--assert-status",
+			"eq 418",
+		}
+		result := schmokin.Run(args)
+		assert.Nil(t, result.Error)
+		assert.True(t, result.Success())
 	})
 
 	t.Run("ExtractJson", func(t *testing.T) {

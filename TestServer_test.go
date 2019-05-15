@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -27,6 +28,10 @@ func CreateTestServer() TestServer {
 			body = []byte("not set")
 		}
 		w.Write(body)
+	})
+	m.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		value, _ := strconv.Atoi(r.URL.Query().Get("value"))
+		w.WriteHeader(value)
 	})
 	m.HandleFunc("/json", func(w http.ResponseWriter, r *http.Request) {
 		json := `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
