@@ -1,0 +1,22 @@
+plan:
+  - name: Something
+    http:
+      url: https://www.google.com
+      method: POST
+      data: |
+        Hello, world!
+      headers:
+        Content-Type: application/json
+    extractors:
+      json:
+        - key: Something
+          query: name.last
+    assertions:
+      context:
+        - key: Something
+          expected: Prichard
+          type: eq
+    exports:
+      - key: Something
+
+
