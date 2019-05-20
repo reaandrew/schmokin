@@ -83,6 +83,14 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "boom"
 	app.Usage = "make an explosive entrance"
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "lang",
+			Value:       "english",
+			Usage:       "language for the greeting",
+			Destination: &language,
+		},
+	}
 	app.Action = func(c *cli.Context) error {
 		fmt.Println("boom! I say!")
 		return nil

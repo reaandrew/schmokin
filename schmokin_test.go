@@ -296,4 +296,17 @@ func Test_Schmokin(t *testing.T) {
 		assert.True(t, result.Success())
 	})
 
+	t.Run("-w", func(t *testing.T) {
+		args := []string{
+			"http://localhost:40000/json",
+			"--extract-json",
+			"LASTNAME name.last",
+			"--assert-context",
+			"LASTNAME eq Prichard",
+		}
+		result := schmokin.Run(args)
+		assert.Nil(t, result.Error)
+		assert.True(t, result.Success())
+	})
+
 }
