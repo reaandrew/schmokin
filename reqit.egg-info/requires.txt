@@ -1,0 +1,15 @@
+Faker
+Jinja2
+astroid
+autoflake
+autopep8
+black
+coverage
+humanize
+pylint
+pytest
+pytest-cov
+pytest-html
+pytest-watch
+requests
+ruamel.yaml

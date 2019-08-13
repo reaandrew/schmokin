@@ -1,23 +1,64 @@
+USERNAME="reaandrew"
+PROJECT="skeleton-go-system"
+GITHUB_TOKEN=$$GITHUB_TOKEN
+VERSION=`cat VERSION`
+BUILD_TIME=`date +%FT%T%z`
+COMMIT_HASH=`git rev-parse HEAD`
+DIST_NAME_CONVENTION="dist/{{.OS}}_{{.Arch}}_{{.Dir}}"
+
+SOURCEDIR=.
+SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
+SOURCES += VERSION
+# This is how we want to name the binary output
+BINARY=${PROJECT}
+
+# These are the values we want to pass for Version and BuildTime
+
+# Setup the -ldflags option for go build here, interpolate the variable values
+LDFLAGS=-ldflags "-X main.CommitHash=${COMMIT_HASH} -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME}"
+
+.DEFAULT_GOAL: $(BINARY)
+
+$(BINARY): deps $(SOURCES)
+	go build ${LDFLAGS} -o ${BINARY} 
+
+.PHONY: deps 
+instal-deps:
+	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+	go get -t -v -d ./...
+
+.PHONY: deploy-deps
+install-deploy-deps:
+	go get -u github.com/mitchellh/gox
+	go get -u github.com/tcnksm/ghr
+	go get -u github.com/mattn/goveralls
+	GOOS=windows go get -u github.com/spf13/cobra
+
+.PHONY: install
+install:
+	go install ${LDFLAGS} ./...
+
+.PHONY: clean
+clean:
+	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
+
+.PHONY: lint
+lint:
+	golangci-lint run
+
 .PHONY: test
-test: shunit2-2.1.7/ shellcheck-v0.5.0/
-	pip install -q --user -r requirements.txt
-	./shellcheck-v0.5.0/shellcheck schmokin 
-	SCHMOKIN_TEST=1 ./schmokin_test
+test:
+	go test -cover -coverprofile=coverage.out ./...
 
-.PHONY: test_osx
-test_osx: shunit2-2.1.7/ shell_check_osx
-	brew install jq
-	pip install -q --user -r requirements.txt
-	shellcheck schmokin 
-	SCHMOKIN_TEST=1 ./schmokin_test
+.PHONY: coverage-report
+coverage-report: 
+	go tool cover -html=c.out -o coverage.html
 
-shunit2-2.1.7/:
-	curl -s -L "https://github.com/kward/shunit2/archive/v2.1.7.tar.gz" | tar zx
+.PHONY: cross-platform-compile
+cross-platform-compile: deploy-deps
+	gox -output ${DIST_NAME_CONVENTION} ${LDFLAGS}
 
-shellcheck-v0.5.0/:
-	curl -s -L -o /tmp/shellcheck-v0.5.0.linux.x86_64.tar.xz https://storage.googleapis.com/shellcheck/shellcheck-v0.5.0.linux.x86_64.tar.xz
-	tar -xJf /tmp/shellcheck-v0.5.0.linux.x86_64.tar.xz -C ./
+.PHONY: upload-release
+upload-release:
+	ghr -username ${USERNAME} -token ${GITHUB_TOKEN} dist/
 
-.PHONY: shell_check_osx
-shell_check_osx:
-	brew install shellcheck

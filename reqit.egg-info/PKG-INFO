@@ -1,0 +1,83 @@
+Metadata-Version: 1.1
+Name: reqit
+Version: 0.1.0
+Summary: reqit
+Home-page: https://github.com/reaandrew/reqit
+Author: Andrew Rea
+Author-email: email@andrewrea.co.uk
+License: MIT License
+
+Copyright (c) 2017 Andrew Rea
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Description: # reqit - Declarative file based HTTP client
+        
+        This is a simple library which uses files to declare the HTTP request and to output information from the response.  The file is a multi-document yaml file with the first document being the HTTP request properties and the second being the content that is to be sent, no yaml properties are need for this section just the raw data e.g. JSON, XML, Form, Strings etc...
+        
+        An example file:
+        
+        ```yaml
+        ---
+        method: POST
+        url: https://postman-echo.com/post?foo1=bar1&foo2=bar2
+        headers:
+          X-SOMETHING: Boom
+        ---
+        {
+          "a":1
+        }
+        ```
+        
+        An example response:
+        
+        ```shell
+        Response Info
+                                Method: POST
+                                Status: 200
+                          Elapsed time: 396 ms
+                                  Size: 359 Bytes
+                              Encoding: utf-8
+        Request Headers
+                            User-Agent: python-requests/2.22.0
+                       Accept-Encoding: gzip, deflate
+                                Accept: */*
+                            Connection: keep-alive
+                           X-SOMETHING: Boom
+                        Content-Length: 7
+        Response Headers
+                      Content-Encoding: gzip
+                          Content-Type: application/json; charset=utf-8
+                                  Date: Thu, 13 Jun 2019 08:16:04 GMT
+                                  ETag: W/"167-JoBy2tgB/RL3o7FkGQZAQ0RUsao"
+                                Server: nginx
+                            set-cookie: sails.sid=s%3AFCviHXQukVCG0k9xJGOz5WTwNjqgN6I9.7ZRiCnsRX63zZ%2F7ZTJNyJ63Rmdr%2F1gv0LVh6xkSIDFs; Path=/; HttpOnly
+                                  Vary: Accept-Encoding
+                        Content-Length: 244
+                            Connection: keep-alive
+        Cookies
+                             sails.sid: s%3AFCviHXQukVCG0k9xJGOz5WTwNjqgN6I9.7ZRiCnsRX63zZ%2F7ZTJNyJ63Rmdr%2F1gv0LVh6xkSIDFs
+        Data
+        b'{"args":{"foo1":"bar1","foo2":"bar2"},"data":{},"files":{},"form":{},"headers":{"x-forwarded-proto":"https","host":"postman-echo.com","content-length":"7","accept":"*/*","accept-encoding":"gzip, deflate","user-agent":"python-requests/2.22.0","x-something":"Boom","x-forwarded-port":"443"},"json":null,"url":"https://postman-echo.com/post?foo1=bar1&foo2=bar2"}''
+        ```
+        
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7

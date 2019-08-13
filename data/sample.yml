@@ -1,0 +1,23 @@
+---
+request: 
+  type: http
+  method: POST
+  url: https://postman-echo.com/post?foo1=bar1&foo2=bar2
+  headers:
+    X-SOMETHING: Boom
+    Content-Type: application/json
+  verify: false
+  pretty: true
+  before:
+    - ./get-reference-data-badges.yml
+---
+{
+  "name":"{{fake.name}}",
+  "address": {
+    "line1": "{{fake.building_number}} {{fake.street_name}}",
+    "line2": "{{fake.secondary_address}}",
+    "city": "{{fake.city}}",
+    "postcode": "{{fake.postcode}}",
+    "country": "{{fake.country}}"
+  }
+}
