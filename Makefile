@@ -23,7 +23,7 @@ $(BINARY): deps $(SOURCES)
 	go build ${LDFLAGS} -o ${BINARY} 
 
 .PHONY: deps 
-instal-deps:
+install-deps:
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 	go get -t -v -d ./...
 
