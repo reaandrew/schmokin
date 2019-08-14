@@ -7,3 +7,4 @@ build/
 context
 timestamp
 output
+*.out

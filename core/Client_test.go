@@ -1,17 +1,35 @@
-package main_test
+package schmokin_test
 
 import (
 	"testing"
 
-	. "github.com/reaandrew/schmokin"
+	schmokin "github.com/reaandrew/schmokin/core"
+	"github.com/reaandrew/schmokin/fake"
 	"github.com/stretchr/testify/assert"
 )
 
+var simpleRequest = `---
+request: 
+  type: http
+  method: POST
+  url: https://somewhere
+  headers:
+    X-SOMETHING: Boom
+    Content-Type: application/json
+  verify: false
+  pretty: true
+  before:
+    - ./get-reference-data.yml
+---
+{
+  "name":"barney",
+}`
+
 func TestSimpleRequest(t *testing.T) {
-	httpClient := CreateFakeHTTPClient()
-	reqit := CreateSchmokinClient(httpClient)
-	reader := CreateFakeRequestReader(simpleRequest)
-	result := reqit.Execute(reader)
+	httpClient := fake.CreateFakeHTTPClient()
+	client := schmokin.CreateClient(httpClient)
+	reader := fake.CreateFakeRequestReader(simpleRequest)
+	result := client.Execute(reader)
 
 	t.Run("result is not nil", func(t *testing.T) {
 		assert.NotNil(t, result)

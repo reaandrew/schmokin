@@ -1,14 +1,16 @@
-package main
+package http
 
 import (
 	"bytes"
 	"net/http"
+
+	schmokin "github.com/reaandrew/schmokin/core"
 )
 
 type DefaultHTTPClient struct {
 }
 
-func (self DefaultHTTPClient) Execute(request SchmokinRequest) SchmokinResult {
+func (self DefaultHTTPClient) Execute(request schmokin.Request) schmokin.Result {
 	client := &http.Client{}
 
 	req, err := http.NewRequest(request.RequestObject.Method,
@@ -21,10 +23,12 @@ func (self DefaultHTTPClient) Execute(request SchmokinRequest) SchmokinResult {
 	for headerKey, headerValue := range request.RequestObject.Headers {
 		req.Header.Add(headerKey, headerValue)
 	}
-	client.Do(req)
-	return SchmokinResult{}
+	if _, err := client.Do(req); err != nil {
+		panic(err)
+	}
+	return schmokin.Result{}
 }
 
-func CreateDefaultHTTPClient() HTTPClient {
+func CreateDefaultHTTPClient() schmokin.HTTPClient {
 	return DefaultHTTPClient{}
 }

@@ -1,4 +1,4 @@
-package main_test
+package http_test
 
 import (
 	"fmt"
@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/reaandrew/schmokin"
+	schmokin "github.com/reaandrew/schmokin/core"
+	"github.com/reaandrew/schmokin/fake"
+	schmokinHTTP "github.com/reaandrew/schmokin/http"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +31,7 @@ request:
   "name":"barney",
 }`
 
-func TestHttpClient(t *testing.T) {
+func TestDefaultHttpClient(t *testing.T) {
 	var requestChan = make(chan *http.Request, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestChan <- r
@@ -37,10 +39,10 @@ func TestHttpClient(t *testing.T) {
 	}))
 	defer server.Close()
 
-	httpClient := CreateDefaultHTTPClient()
-	schmokin := CreateSchmokinClient(httpClient)
+	httpClient := schmokinHTTP.CreateDefaultHTTPClient()
+	schmokin := schmokin.CreateClient(httpClient)
 	schmokinRequest := strings.Replace(request, "$URL", server.URL, -1)
-	reader := CreateFakeRequestReader(schmokinRequest)
+	reader := fake.CreateFakeRequestReader(schmokinRequest)
 	result := schmokin.Execute(reader)
 
 	select {
