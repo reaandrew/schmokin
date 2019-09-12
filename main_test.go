@@ -7,10 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Execute(args []string) string {
-	return "0.0.0"
-}
-
 func TestOutputVersion(t *testing.T) {
 	expectedVersion := "0.1.0"
 	Version = expectedVersion
@@ -18,6 +14,6 @@ func TestOutputVersion(t *testing.T) {
 
 	//check if the app exists first and fail the build if it does not
 
-	programVersion := Execute([]string{"-v"})
-	assert.Equal(t, programVersion, expectedVersion)
+	_, err := Execute([]string{""})
+	assert.Nil(t, err)
 }

@@ -23,10 +23,15 @@ func (self DefaultHTTPClient) Execute(request schmokin.Request) schmokin.Result 
 	for headerKey, headerValue := range request.RequestObject.Headers {
 		req.Header.Add(headerKey, headerValue)
 	}
-	if _, err := client.Do(req); err != nil {
+	if response, err := client.Do(req); err != nil {
 		panic(err)
+	} else {
+		result := schmokin.NewResult()
+		for key, value := range response.Header {
+			result.Headers[key] = value
+		}
+		return result
 	}
-	return schmokin.Result{}
 }
 
 func CreateDefaultHTTPClient() schmokin.HTTPClient {
