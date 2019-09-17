@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
 	"strings"
@@ -66,6 +67,9 @@ func Execute(args []string) {
 	app.Usage = "Schmokin"
 	app.Action = func(c *cli.Context) error {
 		filepath := c.Args().Get(0)
+		if filepath == "" {
+			return errors.New("Filepath required")
+		}
 		client := http.DefaultHTTPClient{}
 		result := existing(client, fileio.FileRequestReader{
 			Path: filepath,

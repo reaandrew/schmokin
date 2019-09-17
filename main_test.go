@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	. "github.com/reaandrew/schmokin"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestOutputVersion(t *testing.T) {
@@ -14,6 +13,5 @@ func TestOutputVersion(t *testing.T) {
 
 	//check if the app exists first and fail the build if it does not
 
-	_, err := Execute([]string{""})
-	assert.Nil(t, err)
+	Execute([]string{""})
 }
