@@ -1,0 +1,28 @@
+h1{
+    font-family: 'Bangers', cursive;
+}
+
+h2{
+    font-family: 'Shadows Into Light', cursive;
+}
+
+h3{
+    font-family: 'Passion One', cursive;
+    /*font-family: 'Shadows Into Light', cursive;*/
+}
+
+.code {
+    font-family: "Courier New", Courier, monospace
+    font-size: 1em;
+}
+
+dt {
+	font-weight: normal;
+}
+
+canvas{
+  position: fixed;
+  left:0;
+  top:0;
+  z-index:-1;
+}

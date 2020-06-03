@@ -1,0 +1,80 @@
+#! /bin/bash
+
+set -e
+
+targetDirectory=~/.schmokin
+if [[ ! -z "${SCHMOKIN_TEST}" ]]; then
+    targetDirectory=./
+fi
+
+mkdir -p $targetDirectory
+export targetDirectory
+
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+GREEN='\033[0;32m'
+BOLD='\e[1m'
+NOTICE='\e[30;48;5;82m'
+FAILED=0
+VERSION="0.1.0" #Build argument
+CHECKSUM_SHA1=CHECKSUM_HERE #Checksum
+CURL_ARGS=()
+EXTRA_PARAMS=0
+RESULT=""
+msg=""
+
+export NOTICE
+export CHECKSUM_SHA1
+export VERSION
+export CURL_ARGS
+export EXTRA_PARAMS
+export BOLD
+export RESULT
+export msg
+
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/functions.sh"
+
+initialize_schmokin_files
+
+# shellcheck disable=SC1073,SC1090
+. $targetDirectory/context
+
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/check_version.sh"
+
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/meta.sh"
+
+URL=$(eval echo "$1")
+export URL
+shift
+
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/read_extra_curl_args.sh"
+
+if ! eval curl "${CURL_ARGS[@]}" "$URL"; then
+    echo "CURL ERROR"
+    cat /tmp/schmokin-output
+    exit 1
+fi
+
+DATA=$(cat /tmp/schmokin-output)
+PATTERN="^> ([A-Z]{3,6}) (.*) HTTP/[0-9.]+"
+HTTP_METHOD=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
+HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f3)
+HEADING "$HTTP_METHOD" "$HTTP_PATH"
+
+# shellcheck disable=SC1073,SC1090
+. "$targetDirectory/libs/process_schmokin_args.sh"
+
+echo ""
+if [ "$FAILED" = "1" ];
+then
+    printf "%s : ${RED}%s${NC}\\n" "RESULT" "FAILURE" 
+    exit $FAILED
+else
+    printf "%s : ${GREEN}%s${NC}\\n" "RESULT" "SUCCESS" 
+    exit 0
+fi
+echo ""

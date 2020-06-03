@@ -1,0 +1,189 @@
+#! /bin/sh
+# file: examples/equality_test.sh
+
+# This is an example of extracting the request body
+# curl -o output -s --trace-ascii - -X POST -d @/tmp/data.json http://localhost:40000/echo/json | awk '/Send data/{flag=1;next}/== Info: /{flag=0}flag' | cut -c 7- | paste -sd '' | tr -s ' '
+
+python schmokin_test_server.py > test-output.log 2>&1  &
+pid=$!  
+sleep 2
+export ENDPOINT=http://localhost:40000
+oneTimeTearDown(){
+    echo "Killing test python web server with PID $pid"
+    kill -9 $pid 2>/dev/null
+}
+
+# NOTE ABOUT ASSERTIONS
+# ---------------------------------------------------------
+# The following tests assert on the variable $? which
+# is the return code of the previous command
+# ---------------------------------------------------------
+
+testAssertingOnStatusCode() {
+    ./schmokin $ENDPOINT/simple --status --eq 200
+    assertEquals 0 $?
+}
+
+testAssertingOnStatusCode_Fails() {
+    ./schmokin $ENDPOINT/simple --status --eq 201
+    assertEquals 1 $?
+}
+
+testAssertingOnStatusCodeRange() {
+    ./schmokin $ENDPOINT/created --status --gt 200 --lt 202
+    assertEquals 0 $?
+}
+
+testAssertingEQ() {
+    ./schmokin $ENDPOINT/simple --jq '.status' --eq "UP"
+    assertEquals 0 $?
+}
+
+testAssertingEQ_Fails() {
+    ./schmokin $ENDPOINT/simple --jq '.status' --eq "DOWN"
+    assertEquals 1 $?
+}
+
+testAssertingGT() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 4
+    assertEquals 0 $?
+}
+
+testAssertingGT_Fails() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 6
+    assertEquals 1 $?
+}
+
+
+testAssertingGE_Equals() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --ge 5
+    assertEquals 0 $?
+}
+
+testAssertingGE_Greater() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --ge 4
+    assertEquals 0 $?
+}
+
+testAssertingGE_Fails() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --ge 6
+    assertEquals 1 $?
+}
+
+testAssertingLT() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --lt 6
+    assertEquals 0 $?
+}
+
+testAssertingLT_Fails() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --lt 5
+    assertEquals 1 $?
+}
+
+testAssertingLE_Equals() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --le 5
+    assertEquals 0 $?
+}
+
+testAssertingLE_Lesser() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --le 6
+    assertEquals 0 $?
+}
+
+testAssertingLE_Fails() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --le 4
+    assertEquals 1 $?
+}
+
+
+testAssertingMultipleTimes() {
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 4 -s 200
+    assertEquals 0 $?
+}
+
+testAssertingOnResponseHeader(){
+    ./schmokin $ENDPOINT/array --res-header "Content-Type" --eq 'application/json'
+    assertEquals 0 $?
+}
+
+testAssertingOnRequestHeader(){
+    ./schmokin $ENDPOINT/array --req-header "Accept" --eq '*/*'
+    assertEquals 0 $?
+}
+
+testAssertingOnContains(){
+    ./schmokin $ENDPOINT/array --res-header "Server" --co 'Python'
+    assertEquals 0 $?
+}
+
+testAddingExtraCurlArguments(){
+    ./schmokin $ENDPOINT/array --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
+    assertEquals 0 $?
+}
+
+testAssertingOnRawResponseBody(){
+    ./schmokin $ENDPOINT/echo --res-body --eq 'UP' -- -X POST -d 'UP'
+    assertEquals 0 $?
+}
+
+testExportingAndUsingVariable(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    # Post the appStatus value and assert on the value
+    ./schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"$appStatus\"}'
+
+    assertEquals 0 $?
+}
+
+testExportingAndUsingVariableInPath(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    # Post the appStatus value and assert on the value
+    ./schmokin '$ENDPOINT/resources/$appStatus' --res-body --eq 'UP'
+
+    assertEquals 0 $?
+}
+
+testDateComparison(){
+    durationThen=$(date +%s)
+    sleep 2
+    durationNow=$(date +%s)
+    assertEquals 2 $((durationNow-durationThen))
+}
+
+testAssertingOnStatusCodeFromTrace() {
+    ./schmokin $ENDPOINT/simple --http_code --eq 200
+    assertEquals 0 $?
+}
+
+testSubstitutingVariableInJSONPayloadFromFile(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    filename=$(mktemp)
+
+    cat <<EOF > "$filename"
+"\$appStatus"
+EOF
+
+    # Post the appStatus value and assert on the value
+    ./schmokin $ENDPOINT/echo --res-body  --eq '"UP"' -- -X POST -d @"$filename"
+
+    assertEquals 0 $?
+}
+
+testSubstitutingVariableInJSONPayloadFromInline(){
+    # Store the status message of the application in a variable named appStatus
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+    # Post the appStatus value and assert on the value
+    ./schmokin $ENDPOINT/echo --res-body --eq 'UP' -- -X POST -d '$appStatus'
+
+    assertEquals 0 $?
+}
+
+# Load shUnit2.
+. ./shunit2-2.1.7/shunit2
+
