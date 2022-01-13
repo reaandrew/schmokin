@@ -18,6 +18,8 @@ while [ -n "$1" ]; do
         then
          PASS "$statement" "PASS"
         else
+          echo -n "RESULT"; echo "$RESULT" | hd || echo "$RESULT" | hexdump
+          echo -n "EXPECTED"; echo "$2" | hd || echo "$RESULT" | hexdump
          FAIL "$statement" "FAIL"
         fi
         shift
@@ -66,14 +68,14 @@ while [ -n "$1" ]; do
         msg="response header $2"
         EXPECTED=$2
         RESULT=$(echo -n "$DATA" \
-            | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g' | sed 's/\n//g' | tr -d '\000')
+            | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g' | tr -d '\r' | tr -d '\000')
         shift
         ;;
     --req-header)
         msg="request header $2"
         EXPECTED=$2
         RESULT=$(echo -n "$DATA" \
-            | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g' | sed 's/\n//g' | tr -d '\000')
+            | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g' | tr -d '\r' | tr -d '\000')
         shift
         ;;
     --co)
