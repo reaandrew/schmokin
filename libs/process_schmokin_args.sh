@@ -18,7 +18,10 @@ while [ -n "$1" ]; do
         then
          PASS "$statement" "PASS"
         else
-         echo "expected $2 actual $RESULT"
+          echo "CHEKCING"
+          echo -n "$RESULT" | wc -c
+          echo -n "$2" | wc -c
+          echo "expected $2 actual $RESULT"
          FAIL "$statement" "FAIL"
         fi
         shift
