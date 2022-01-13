@@ -18,8 +18,6 @@ while [ -n "$1" ]; do
         then
          PASS "$statement" "PASS"
         else
-          echo -n "RESULT"; echo "$RESULT" | hd || echo "$RESULT" | hexdump
-          echo -n "EXPECTED"; echo "$2" | hd || echo "$RESULT" | hexdump
          FAIL "$statement" "FAIL"
         fi
         shift
