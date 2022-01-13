@@ -107,7 +107,6 @@ testAssertingOnResponseHeader(){
 }
 
 testAssertingOnRequestHeader(){
-    curl -v $ENDPOINT/array
     ./schmokin $ENDPOINT/array --req-header "Accept" --eq '*/*'
     assertEquals 0 $?
 }
