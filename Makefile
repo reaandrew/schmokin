@@ -33,7 +33,7 @@ endif
 .PHONY: test
 test: shunit2-2.1.7/ shellcheck-v0.8.0/
 	pip3 install -q --user -r requirements.txt
-	./shellcheck-v0.8.0/shellcheck -x schmokin 
+	find ./ -name *.sh -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
 	SCHMOKIN_TEST=1 ./schmokin_test
 
 shunit2-2.1.7/:

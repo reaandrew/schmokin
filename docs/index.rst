@@ -59,8 +59,9 @@ Assertions
 
 --eq	equals
 
-.. literalinclude:: code-snippets/assertions/eq.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '.status' --eq "UP"
 
 --gt	greater than
 
