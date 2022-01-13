@@ -1,5 +1,5 @@
-shunit2-2.1.7/
-shellcheck-v0.5.0
+shunit2-*
+shellcheck-*
 dist/
 *.swp
 *.log
