@@ -1,6 +1,6 @@
 # Schmokin
 
-[![Build Status](https://travis-ci.org/reaandrew/schmokin.svg?branch=master)](https://travis-ci.org/reaandrew/schmokin)
+[![](http://github-actions.40ants.com/reaandrew/schmokin/matrix.svg)](https://github.com/reaandrew/schmokin)
 
 A simple utility which wraps curl and allows you to make assertions on the HTTP requests, responses, timings and other metrics provided by curl.
 
