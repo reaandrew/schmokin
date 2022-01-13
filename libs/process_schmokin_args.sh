@@ -2,7 +2,7 @@ while [ -n "$1" ]; do
     case "$1" in
     --status)
        msg=$(printf "HTTP Status")
-       RESULT=$(echo "$DATA" | grep -Eo "HTTP/[0-9.]+ [0-9]{3}"  | grep -v 100 | cut -d' ' -f2)
+       RESULT=$(echo -n "$DATA" | grep -Eo "HTTP/[0-9.]+ [0-9]{3}"  | grep -v 100 | cut -d' ' -f2)
        ;;
     --jq)
         msg=$2
@@ -14,7 +14,7 @@ while [ -n "$1" ]; do
         RESULT=$(cat < "/tmp/schmokin-response")
        ;;
     --eq)
-        statement="expected ${msg:0:60} = $2 actual $RESULT"
+        statement="expected ${msg:0:60} = $2 (${#2}) actual $RESULT (${#RESULT})"
         if [ "$RESULT" = "$2" ];
         then
          PASS "$statement" "PASS"
@@ -66,15 +66,15 @@ while [ -n "$1" ]; do
     --res-header)
         msg="response header $2"
         EXPECTED=$2
-        RESULT=$(echo "$DATA" \
-            | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
+        RESULT=$(echo -n "$DATA" \
+            | tr -d ' ' | grep "<$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g' | tr -d '\000')
         shift
         ;;
     --req-header)
         msg="request header $2"
         EXPECTED=$2
-        RESULT=$(echo "$DATA" \
-            | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g')
+        RESULT=$(echo -n "$DATA" \
+            | tr -d ' ' | grep ">$EXPECTED.*" | cut -d: -f2 | sed 's/\r//g' | tr -d '\000')
         shift
         ;;
     --co)

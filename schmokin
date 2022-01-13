@@ -3,7 +3,7 @@
 set -e
 
 targetDirectory=~/.schmokin
-if [[ ! -z "${SCHMOKIN_TEST}" ]]; then
+if [[ -n "${SCHMOKIN_TEST}" ]]; then
     targetDirectory=./
 fi
 
@@ -32,27 +32,28 @@ export BOLD
 export RESULT
 export msg
 
-# shellcheck disable=SC1073,SC1090
-. "$targetDirectory/libs/functions.sh"
+# shellcheck source=libs/functions.sh
+source "$targetDirectory/libs/functions.sh"
 
 initialize_schmokin_files
 
-# shellcheck disable=SC1073,SC1090
-. $targetDirectory/context
+# shellcheck source=context
+source $targetDirectory/context
 
-# shellcheck disable=SC1073,SC1090
-. "$targetDirectory/libs/check_version.sh"
+# shellcheck source=libs/check_version.sh
+source "$targetDirectory/libs/check_version.sh"
 
-# shellcheck disable=SC1073,SC1090
-. "$targetDirectory/libs/meta.sh"
+# shellcheck source=libs/meta.sh
+source "$targetDirectory/libs/meta.sh"
 
 URL=$(eval echo "$1")
 export URL
 shift
 
-# shellcheck disable=SC1073,SC1090
-. "$targetDirectory/libs/read_extra_curl_args.sh"
+# shellcheck source=libs/read_extra_curl_args.sh
+source "$targetDirectory/libs/read_extra_curl_args.sh"
 
+# shellcheck disable=SC2294
 if ! eval curl "${CURL_ARGS[@]}" "$URL"; then
     echo "CURL ERROR"
     cat /tmp/schmokin-output
@@ -65,8 +66,8 @@ HTTP_METHOD=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
 HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
-# shellcheck disable=SC1073,SC1090
-. "$targetDirectory/libs/process_schmokin_args.sh"
+# shellcheck source=libs/process_schmokin_args.sh
+source "$targetDirectory/libs/process_schmokin_args.sh"
 
 echo ""
 if [ "$FAILED" = "1" ];
