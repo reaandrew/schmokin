@@ -1,3 +1,4 @@
+CHEAT_ARG := $(shell :> context)
 OSFLAG 				:=
 ifeq ($(OS),Windows_NT)
 	OSFLAG += -D WIN32
