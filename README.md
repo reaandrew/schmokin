@@ -122,6 +122,3 @@ schmokin $ENDPOINT/simple --jq '.status' --export appStatus
 schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"$appStatus\"}'
 ```
 
-https://github.com/mh-cbon/go-msi
-https://medium.com/@mattholt/packaging-a-go-application-for-macos-f7084b00f6b5
-
