@@ -19,21 +19,27 @@ A simple utility which wraps curl and allows you to make assertions on the HTTP 
 
 The tests first setup a simple webserver which is built in Python Flask.  Once all the tests have completed it uses the `shunit` `oneTimeTearDown` method to kill the test server.
 
-```
+```shell
 make test
+```
+
+## Linting
+
+```shell
+make lint
 ```
 
 ## Installation
 
-```
-curl -Ls https://github.com/reaandrew/schmokin/releases/download/0.1.0/schmokin_install | bash
+```shell
+curl -Ls https://github.com/reaandrew/schmokin/releases/download/latest/schmokin_install | bash
 ```
 
 ## Running
 
 Schmokin requires the 1st argument to be the url, followed by an optional set of Schmokin arguments, followed by a delimited of `--` and finally followed by any optional extra curl arguments.  Schmokin literallly proxies any arguments supplied after the `--` delimiter to curl.
 
-```
+```shell
 schmokin <url> [schmokin-args] -- [curl-args]
 ```
 Schmokin outputs a pretty format and returns either an exit code of 0 (PASSED) or 1 (FAILED).
@@ -106,7 +112,15 @@ schmokin $URL --res-header "Server" --contains 'Python'
 ./schmokin $ENDPOINT/array --req-header "X-FU" --eq 'BAR' -- -H "X-FU: BAR"
 ```
 
+**Export Utility**
 
+```shell
+# Store the status message of the application in a variable named appStatus
+schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+
+# Post the appStatus value and assert on the value
+schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"$appStatus\"}'
+```
 
 https://github.com/mh-cbon/go-msi
 https://medium.com/@mattholt/packaging-a-go-application-for-macos-f7084b00f6b5
