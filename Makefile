@@ -37,7 +37,7 @@ test: shunit2-2.1.7/ lint
 
 .PHONY: lint
 lint: shellcheck-v0.8.0/
-	find ./ -name *.sh -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
+	find ./ -name *.sh -and -not -path "*shunit*" -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
 	
 
 shunit2-2.1.7/:

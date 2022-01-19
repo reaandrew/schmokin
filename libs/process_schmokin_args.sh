@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+targetDirectory=${targetDirectory:-~/.schmokin}
+
 while [ -n "$1" ]; do
     case "$1" in
     --status)
@@ -89,7 +93,7 @@ while [ -n "$1" ]; do
     --export)
         name=$2
         message="export $name=\"$RESULT\""
-        echo "$message" >> $targetDirectory/context
+        echo "$message" >> "$targetDirectory"/context
         PASS "$message" "PASS"
         shift
         ;;

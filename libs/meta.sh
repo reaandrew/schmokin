@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 for arg in "$@";
 do
     case "$arg" in

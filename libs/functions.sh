@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+targetDirectory=${targetDirectory:-~/.schmokin}
+
 initialize_schmokin_files(){
     if [ ! -f "$targetDirectory/timestamp" ]; then
         date +%s > "$targetDirectory/timestamp"
@@ -49,5 +53,5 @@ PASS(){
 
 FAIL(){
     printf "${RED}%-6s${NC}: %s \\n" "${2:-FAIL}" "$1" 
-    FAILED=1
+    export FAILED=1
 }

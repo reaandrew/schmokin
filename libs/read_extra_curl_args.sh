@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Loop over the variables to get any args after the --
 whitespace="[[:space:]]"
 args=$#                          # number of command line args
