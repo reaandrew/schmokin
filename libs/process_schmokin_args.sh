@@ -98,7 +98,7 @@ while [ -n "$1" ]; do
         ;;
     --*)
         value=$(grep "${1/--/}" /tmp/schmokin-output | cut -d: -f2 | tr -d ' ')
-        if ! [ -z "$value" ]; then
+        if [ -n "$value" ]; then
            RESULT="$value"
            msg="${1/--/}"
         fi 

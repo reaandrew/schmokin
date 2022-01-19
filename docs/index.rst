@@ -65,28 +65,33 @@ Assertions
 
 --gt	greater than
 
-.. literalinclude:: code-snippets/assertions/gt.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '. | length' --gt 6
 
 --ge	greater than or equals
 
-.. literalinclude:: code-snippets/assertions/ge.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '. | length' --ge 6
 
 --lt	less than
 
-.. literalinclude:: code-snippets/assertions/lt.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '. | length' --lt 4
 
 --le	less than or equals
 
-.. literalinclude:: code-snippets/assertions/le.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '. | length' --le 6
 
 --co	contains
 
-.. literalinclude:: code-snippets/assertions/co.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '.result' --co "SUCCESS"
 
 Chaining Assertions
 ~~~~~~~~~~~~~~~~~~~
@@ -99,8 +104,9 @@ Extractors
 
 --jq	JQ expression
 
-.. literalinclude:: code-snippets/extractors/jq.sh
-   :language: shell
+.. code-block:: shell
+
+  schmokin $URL --jq '.status' --eq "UP"
 
 --req-header	HTTP Request Header
 --resp-header	HTTP Response Header

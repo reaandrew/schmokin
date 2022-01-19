@@ -31,10 +31,14 @@ else
 endif
 
 .PHONY: test
-test: shunit2-2.1.7/ shellcheck-v0.8.0/
+test: shunit2-2.1.7/ lint
 	pip3 install -q --user -r requirements.txt
-	find ./ -name *.sh -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
 	SCHMOKIN_TEST=1 ./schmokin_test
+
+.PHONY: lint
+lint: shellcheck-v0.8.0/
+	find ./ -name *.sh -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
+	
 
 shunit2-2.1.7/:
 	curl -s -L "https://github.com/kward/shunit2/archive/v2.1.7.tar.gz" | tar zx
