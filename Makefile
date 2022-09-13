@@ -45,3 +45,7 @@ shunit2-2.1.7/:
 
 shellcheck-v0.8.0/:
 	$(SHELLCHECK_INSTALL)
+
+.PHONY: compress
+compress:
+	tar -czvf schmokin.tar.gz libs schmokin.format schmokin
