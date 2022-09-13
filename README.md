@@ -1,8 +1,21 @@
-# Schmokin
-
-[![](http://github-actions.40ants.com/reaandrew/schmokin/matrix.svg)](https://github.com/reaandrew/schmokin)
+# Schmokin ([https://schmok.in](https://schmok.in))
 
 A simple utility which wraps curl and allows you to make assertions on the HTTP requests, responses, timings and other metrics provided by curl.
+
+## Installation
+
+```shell
+curl -Ls https://github.com/reaandrew/schmokin/releases/latest/download/schmokin_install | bash
+```
+
+## Running
+
+Schmokin requires the 1st argument to be the url, followed by an optional set of Schmokin arguments, followed by a delimited of `--` and finally followed by any optional extra curl arguments.  Schmokin literallly proxies any arguments supplied after the `--` delimiter to curl.
+
+```shell
+schmokin <url> [schmokin-args] -- [curl-args]
+```
+Schmokin outputs a pretty format and returns either an exit code of 0 (PASSED) or 1 (FAILED).
 
 ## Under the hood
 
@@ -28,21 +41,6 @@ make test
 ```shell
 make lint
 ```
-
-## Installation
-
-```shell
-curl -Ls https://github.com/reaandrew/schmokin/releases/download/latest/schmokin_install | bash
-```
-
-## Running
-
-Schmokin requires the 1st argument to be the url, followed by an optional set of Schmokin arguments, followed by a delimited of `--` and finally followed by any optional extra curl arguments.  Schmokin literallly proxies any arguments supplied after the `--` delimiter to curl.
-
-```shell
-schmokin <url> [schmokin-args] -- [curl-args]
-```
-Schmokin outputs a pretty format and returns either an exit code of 0 (PASSED) or 1 (FAILED).
 
 ## Examples
 
