@@ -33,7 +33,12 @@ export RESULT
 export msg
 
 # shellcheck source=libs/functions.sh
-source "$targetDirectory/libs/functions.sh"
+if [ -d "./libs" ]
+then
+    source "./libs/functions.sh"
+else
+    source "$targetDirectory/libs/functions.sh"
+fi
 
 initialize_schmokin_files
 
@@ -41,17 +46,33 @@ initialize_schmokin_files
 source $targetDirectory/context
 
 # shellcheck source=libs/check_version.sh
-source "$targetDirectory/libs/check_version.sh"
+if [ -d "./libs" ]
+then
+    source "./libs/check_version.sh"
+else
+    source "$targetDirectory/libs/check_version.sh"
+fi
 
 # shellcheck source=libs/meta.sh
-source "$targetDirectory/libs/meta.sh"
+if [ -d "./libs" ]
+then
+    source "./libs/meta.sh"
+else
+    source "$targetDirectory/libs/meta.sh"
+fi
 
 URL=$(eval echo "$1")
 export URL
 shift
 
 # shellcheck source=libs/read_extra_curl_args.sh
-source "$targetDirectory/libs/read_extra_curl_args.sh"
+if [ -d "./libs" ]
+then
+    source "./libs/read_extra_curl_args.sh"
+else
+    source "$targetDirectory/libs/read_extra_curl_args.sh"
+fi
+
 
 # shellcheck disable=SC2294
 if ! eval curl "${CURL_ARGS[@]}" "$URL"; then
@@ -67,7 +88,13 @@ HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f3)
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
 
 # shellcheck source=libs/process_schmokin_args.sh
-source "$targetDirectory/libs/process_schmokin_args.sh"
+if [ -d "./libs" ]
+then
+    source "./libs/process_schmokin_args.sh"
+else
+    source "$targetDirectory/libs/process_schmokin_args.sh"
+fi
+
 
 echo ""
 if [ "$FAILED" = "1" ];
