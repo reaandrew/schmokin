@@ -49,13 +49,6 @@ initialize_schmokin_files
 # shellcheck source=context
 source $targetDirectory/context
 
-# shellcheck source=libs/check_version.sh
-if [ -d "./libs" ]
-then
-    source "./libs/check_version.sh"
-else
-    source "$targetDirectory/libs/check_version.sh"
-fi
 
 # shellcheck source=libs/meta.sh
 if [ -d "./libs" ]

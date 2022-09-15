@@ -6,8 +6,7 @@ do
         -v|--version)
             echo "schmokin"
             echo 
-            printf "%-20s: %s\n" "version" "$VERSION"
-            printf "%-20s: %s\n" "sha1" "$CHECKSUM_SHA1"
+            printf "%-20s: %s\n" "version" "v1.1.1"
             shift
             exit 0
         ;;
