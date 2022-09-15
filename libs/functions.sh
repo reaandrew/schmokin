@@ -2,6 +2,10 @@
 
 targetDirectory=${targetDirectory:-~/.schmokin}
 
+contains() {
+    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]] && exit 0 || exit 1
+}
+
 initialize_schmokin_files(){
     if [ ! -f "$targetDirectory/timestamp" ]; then
         date +%s > "$targetDirectory/timestamp"
@@ -54,4 +58,16 @@ PASS(){
 FAIL(){
     printf "${RED}%-6s${NC}: %s \\n" "${2:-FAIL}" "$1" 
     export FAILED=1
+}
+
+check_for_required_apps(){
+  required_apps=("curl --version" "jq --version")
+  for app in "${required_apps[@]}"
+  do
+    if ! $app &> /dev/null
+    then
+        echo "ERROR: $app could not be found and is needed for schmokin"
+        exit
+    fi
+  done
 }

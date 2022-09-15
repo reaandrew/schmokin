@@ -54,7 +54,6 @@ testAssertingGT_Fails() {
     assertEquals 1 $?
 }
 
-
 testAssertingGE_Equals() {
     ./schmokin $ENDPOINT/array --jq '. | length' --ge 5
     assertEquals 0 $?
@@ -97,7 +96,7 @@ testAssertingLE_Fails() {
 
 
 testAssertingMultipleTimes() {
-    ./schmokin $ENDPOINT/array --jq '. | length' --gt 4 -s 200
+    ./schmokin $ENDPOINT/array --jq '. | length' --gt 4 --status 200
     assertEquals 0 $?
 }
 
@@ -128,7 +127,7 @@ testAssertingOnRawResponseBody(){
 
 testExportingAndUsingVariable(){
     # Store the status message of the application in a variable named appStatus
-    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus
 
     # Post the appStatus value and assert on the value
     ./schmokin $ENDPOINT/echo --jq '.message' --eq 'UP' -- -X POST -d '{\"message\":\"$appStatus\"}'
@@ -138,7 +137,7 @@ testExportingAndUsingVariable(){
 
 testExportingAndUsingVariableInPath(){
     # Store the status message of the application in a variable named appStatus
-    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus
 
     # Post the appStatus value and assert on the value
     ./schmokin '$ENDPOINT/resources/$appStatus' --res-body --eq 'UP'
@@ -153,14 +152,10 @@ testDateComparison(){
     assertEquals 2 $((durationNow-durationThen))
 }
 
-testAssertingOnStatusCodeFromTrace() {
-    ./schmokin $ENDPOINT/simple --http_code --eq 200
-    assertEquals 0 $?
-}
 
 testSubstitutingVariableInJSONPayloadFromFile(){
     # Store the status message of the application in a variable named appStatus
-    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus
 
     filename=$(mktemp)
 
@@ -176,11 +171,16 @@ EOF
 
 testSubstitutingVariableInJSONPayloadFromInline(){
     # Store the status message of the application in a variable named appStatus
-    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus 
+    ./schmokin $ENDPOINT/simple --jq '.status' --export appStatus
 
     # Post the appStatus value and assert on the value
     ./schmokin $ENDPOINT/echo --res-body --eq 'UP' -- -X POST -d '$appStatus'
 
+    assertEquals 0 $?
+}
+
+testAssertingOnStatusCodeFromTrace() {
+    ./schmokin $ENDPOINT/simple --http_code --eq 200
     assertEquals 0 $?
 }
 

@@ -40,7 +40,11 @@ else
     source "$targetDirectory/libs/functions.sh"
 fi
 
+
+check_for_required_apps
 initialize_schmokin_files
+
+
 
 # shellcheck source=context
 source $targetDirectory/context
@@ -86,6 +90,7 @@ PATTERN="^> ([A-Z]{3,6}) (.*) HTTP/[0-9.]+"
 HTTP_METHOD=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f2)
 HTTP_PATH=$(echo "$DATA" | grep -E "$PATTERN" | cut -d' ' -f3)
 HEADING "$HTTP_METHOD" "$HTTP_PATH"
+
 
 # shellcheck source=libs/process_schmokin_args.sh
 if [ -d "./libs" ]

@@ -36,13 +36,13 @@ endif
 test: shunit2-2.1.7/ lint
 	deactivate 2> /dev/null || :
 	python3 -m venv venv
-	source venv/bin/activate && \
-		pip install -q -r requirements.txt && \
+	source venv/bin/activate ; \
+		pip install -q -r requirements.txt ; \
 		SCHMOKIN_TEST=1 ./schmokin_test
 
 .PHONY: lint
 lint: shellcheck-v0.8.0/
-	find ./ -name *.sh -and -not -path "*shunit*" -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
+	@find ./ -name *.sh -and -not -path "*shunit*" -exec ./shellcheck-v0.8.0/shellcheck -x {} \;
 	
 
 shunit2-2.1.7/:
